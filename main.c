@@ -1,13 +1,8 @@
 #include <SDL2/SDL_events.h>
-
 #include <stdio.h>
-
 #include <stdlib.h>
-
 #include <SDL2/SDL.h>
-
 #include <SDL2/SDL_image.h>
-
 #include <string.h>
 
 #define width 1000

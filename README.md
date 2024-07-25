@@ -1,7 +1,7 @@
 # Conways-Game-of-Life-C
 This is a GUI representation of Conway's game of life made in C with the SDL2 library
 
-##Description
+## Description
 
 By selecting the grid cells with the mouse you can spawn live cells, to remove them use RMB.
 To start or pause the simulation use the SPACEBAR.
@@ -11,7 +11,7 @@ It's advized to stop the simulation when changing speed because the event system
 
 You can also use Q to quit the program
 
-##Compilation
+## Compilation
 
 To install the library you can follow SDL's [wiki](https://wiki.libsdl.org/SDL2/Installation)
 

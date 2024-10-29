@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <string.h>
 
 #define width 1000
@@ -17,76 +18,33 @@
 #define DIGITOFFSET 7
 #define SYMBOLOFFSET 14
 
-#include <SDL2/SDL.h>
+#define FONT_PATH "./PixelFont7-G02A.ttf"
 
 #include <string.h>
 
 #include <stdlib.h>
 
-void renderString(SDL_Renderer * renderer, SDL_Texture * imageTexture, int x, int y, const char * text, float SCALE, float separation) {
+void renderString(SDL_Renderer * renderer, TTF_Font *font, int x, int y, const char * text) {
+    SDL_Color color = {
+        255,
+        255,
+        255,
+        255
+    };
+    SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);
+    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
 
-    char * textCopy = strdup(text);
-    if (textCopy == NULL) {
-        return;
-    }
-    char symbols[] = "?!.,:;\"()'/%-+=<>@#_";
-    for (int i = 0; textCopy[i] != '\0'; i++) {
-        if (textCopy[i] >= '0' && textCopy[i] <= '9') {
-            SDL_Rect srcRect = {
-                (LETTERX + 1) * (textCopy[i] - '0'),
-                DIGITOFFSET,
-                LETTERX,
-                LETTERY
-            };
+    SDL_Rect rect = {
+        x,
+        y,
+        surface -> w,
+        surface -> h
+    };
 
-            SDL_Rect destRect = {
-                x + i * LETTERX * SCALE * separation,
-                y,
-                LETTERX * SCALE,
-                LETTERY * SCALE
-            };
-            SDL_RenderCopy(renderer, imageTexture, & srcRect, & destRect);
-        } else if (textCopy[i] >= 'A' && textCopy[i] <= 'Z' || textCopy[i] >= 'a' && textCopy[i] <= 'z') {
-            if (textCopy[i] >= 'a' && textCopy[i] <= 'z') {
-                textCopy[i] -= 32;
-            }
-            SDL_Rect srcRect = {
-                (LETTERX + 1) * (textCopy[i] - 'A'),
-                0,
-                LETTERX,
-                LETTERY
-            };
+    SDL_RenderCopy(renderer, texture, NULL, & rect);
 
-            SDL_Rect destRect = {
-                x + i * LETTERX * SCALE * separation,
-                y,
-                LETTERX * SCALE,
-                LETTERY * SCALE
-            };
-            SDL_RenderCopy(renderer, imageTexture, & srcRect, & destRect);
-        } else {
-            for (int j = 0; j < strlen(symbols); j++) {
-                if (textCopy[i] == symbols[j]) {
-                    SDL_Rect srcRect = {
-                        (LETTERX + 1) * j,
-                        SYMBOLOFFSET,
-                        LETTERX,
-                        LETTERY
-                    };
-
-                    SDL_Rect destRect = {
-                        x + i * LETTERX * SCALE * separation,
-                        y,
-                        LETTERX * SCALE,
-                        LETTERY * SCALE
-                    };
-                    SDL_RenderCopy(renderer, imageTexture, & srcRect, & destRect);
-                }
-            }
-        }
-    }
-
-    free(textCopy);
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
 }
 
 void drawGrid(SDL_Renderer * renderer) {
@@ -168,31 +126,23 @@ int logic(int grid[width / GRID_SIZE][height / GRID_SIZE]) {
     return moved;
 }
 
-int main(int argc, char ** argv) {
-    //==================================================================================================== INITIALIZATIONS
+
+int main(int argc, char **argv) {
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return 1;
     }
 
-    // Initialize SDL_image
-    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
-        SDL_Quit();
-        return 1;
-    }
-
-    // Create SDL window
-    SDL_Window * window = SDL_CreateWindow("Conway's game of life", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width + UI_WIDTH, height, SDL_WINDOW_OPENGL);
+    // Create SDL window and renderer
+    SDL_Window *window = SDL_CreateWindow("Conway's Game of Life", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width + UI_WIDTH, height, SDL_WINDOW_OPENGL);
     if (!window) {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
         SDL_Quit();
         return 1;
     }
 
-    // Create renderer (accelerated and in sync with the display refresh rate)
-    SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) {
         SDL_DestroyWindow(window);
         printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -200,30 +150,24 @@ int main(int argc, char ** argv) {
         return 1;
     }
 
-    // Load image
-    SDL_Surface * imageSurface = IMG_Load("image.png");
-    if (!imageSurface) {
-        printf("Unable to load image! SDL_image Error: %s\n", IMG_GetError());
+    if (TTF_Init() < 0) {
+        printf("TTF_Init: %s\n", TTF_GetError());
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         SDL_Quit();
         return 1;
     }
 
-    // Create texture from surface
-    SDL_Texture * imageTexture = SDL_CreateTextureFromSurface(renderer, imageSurface);
-    SDL_FreeSurface(imageSurface); // Free the loaded surface
-    if (!imageTexture) {
-        printf("Unable to create texture from image! SDL_Error: %s\n", SDL_GetError());
+    TTF_Font *font = TTF_OpenFont(FONT_PATH, 24);
+    if (!font) {
+        printf("TTF_OpenFont: %s\n", TTF_GetError());
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         SDL_Quit();
         return 1;
     }
 
-    //==================================================================================================== GAME LOOP
     int cells[width / GRID_SIZE][height / GRID_SIZE] = {0};
-
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
@@ -232,23 +176,22 @@ int main(int argc, char ** argv) {
     int generation = 0;
 
     SDL_Event event;
-    int mouseDown = 0; 
-    int delay = 1000;
-    int speed = 1;
+    int mouseDown = 0;
+    int speed = 10;
+    int delay = 1000 / speed;
+
+    Uint32 lastUpdateTime = SDL_GetTicks();
 
     while (running) {
-        while (SDL_PollEvent( & event)) {
-            
+        // Process events without delay
+        while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = 0;
             }
 
-
             if ((event.type == SDL_MOUSEBUTTONDOWN) && placing) {
                 int x, y;
-                SDL_GetMouseState( & x, & y);
-                printf("Mouse clicked at (%d, %d)\n", x, y);
-
+                SDL_GetMouseState(&x, &y);
                 int rx = x / GRID_SIZE;
                 int ry = y / GRID_SIZE;
 
@@ -257,7 +200,7 @@ int main(int argc, char ** argv) {
                 } else if (event.button.button == SDL_BUTTON_RIGHT) {
                     cells[rx][ry] = 0;
                 }
-                mouseDown = 1; 
+                mouseDown = 1;
             }
 
             if (event.type == SDL_MOUSEBUTTONUP) {
@@ -266,8 +209,7 @@ int main(int argc, char ** argv) {
 
             if (event.type == SDL_MOUSEMOTION && placing && mouseDown) {
                 int x, y;
-                SDL_GetMouseState( & x, & y);
-
+                SDL_GetMouseState(&x, &y);
                 int rx = x / GRID_SIZE;
                 int ry = y / GRID_SIZE;
 
@@ -279,7 +221,6 @@ int main(int argc, char ** argv) {
             }
 
             if (event.type == SDL_KEYDOWN) {
-
                 switch (event.key.keysym.sym) {
                     case SDLK_q:
                         running = 0;
@@ -300,62 +241,43 @@ int main(int argc, char ** argv) {
                         }
                         break;
                 }
-
             }
-
         }
 
-        if (!placing) {
+        if (!placing && SDL_GetTicks() - lastUpdateTime > delay) {
             generation += logic(cells);
-            SDL_Delay(delay);
-
+            lastUpdateTime = SDL_GetTicks();
         }
 
-        //==================================================================================================== RENDERING
-
+        // Rendering
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        // Draw the grid
         drawGrid(renderer);
-
-        // Draw filled cells
         drawFilledCells(renderer, cells);
 
-        // Texts 
-        float scale = 3;
+        renderString(renderer, font, width + 40, 100, "Game of Life");
+
         char GenerationString[50];
-
-        renderString(renderer, imageTexture, width + 40, 100, "Game of Life", scale * 1.5, 1.3);
-
         sprintf(GenerationString, "Generation : %d", generation);
-        renderString(renderer, imageTexture, width + 40, 200, GenerationString, scale, 1.3);
+        renderString(renderer, font, width + 40, 200, GenerationString);
 
-        if (placing) {
-            renderString(renderer, imageTexture, width + 40, height / 2 - 25, "Placing...", scale, 1.3);
-        } else {
-            renderString(renderer, imageTexture, width + 40, height / 2 - 25, "Running...", scale, 1.3);
-        }
-
-        renderString(renderer, imageTexture, width + 40, height / 2, "LMB to place", scale, 1.3);
-        renderString(renderer, imageTexture, width + 40, height / 2 + 25, "RMB to remove", scale, 1.3);
-        renderString(renderer, imageTexture, width + 40, height / 2 + 50, "SPACE to run", scale, 1.3);
-        renderString(renderer, imageTexture, width + 40, height / 2 + 75, "A / D FOR SPEED", scale, 1.3);
+        renderString(renderer, font, width + 40, height / 2 - 25, placing ? "Placing..." : "Running...");
+        renderString(renderer, font, width + 40, height / 2, "LMB to place");
+        renderString(renderer, font, width + 40, height / 2 + 50, "RMB to remove");
+        renderString(renderer, font, width + 40, height / 2 + 100, "Space to toggle");
+        renderString(renderer, font, width + 40, height / 2 + 200, "A/D to change speed");
 
         char SpeedString[50];
         sprintf(SpeedString, "Speed : %d", speed);
-        renderString(renderer, imageTexture, width + 40, height / 2 + 150, SpeedString, scale, 1.3);
+        renderString(renderer, font, width + 40, height / 2 + 150, SpeedString);
 
-        // Show what was drawn
         SDL_RenderPresent(renderer);
     }
 
-    //==================================================================================================== CLEANUP
-    // Release resources
-    SDL_DestroyTexture(imageTexture);
+    // Cleanup
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-    IMG_Quit();
     SDL_Quit();
 
     return 0;

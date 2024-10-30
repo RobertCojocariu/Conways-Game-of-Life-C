@@ -14,7 +14,7 @@ You can also use Q to quit the program.
 
 To install the library you can follow SDL's [wiki](https://wiki.libsdl.org/SDL2/Installation).
 
-To compile and run the program using gcc
+To compile and run the program using make
 
 ```bash
 make && ./Conways-Game-of-Life-C 

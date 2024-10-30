@@ -17,6 +17,6 @@ To install the library you can follow SDL's [wiki](https://wiki.libsdl.org/SDL2/
 To compile and run the program using gcc
 
 ```bash
-gcc main.c -o main -lSDL2main -lSDL2 -lSDL2_image && ./main
+make && ./Conways-Game-of-Life-C 
 ```
 

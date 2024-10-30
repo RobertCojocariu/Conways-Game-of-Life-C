@@ -6,75 +6,11 @@
 #include <SDL2/SDL_ttf.h>
 #include <string.h>
 
-#define width 1000
-#define height 800
-#define UI_WIDTH 450
+#include "../include/constants.h"
+#include "../include/UI.h"
 
-#define GRID_SIZE 15
 
-#define LETTERX 5
-#define LETTERY 6
-
-#define DIGITOFFSET 7
-#define SYMBOLOFFSET 14
-
-#define FONT_PATH "./PixelFont7-G02A.ttf"
-
-#include <string.h>
-
-#include <stdlib.h>
-
-void renderString(SDL_Renderer * renderer, TTF_Font *font, int x, int y, const char * text) {
-    SDL_Color color = {
-        255,
-        255,
-        255,
-        255
-    };
-    SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);
-    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-
-    SDL_Rect rect = {
-        x,
-        y,
-        surface -> w,
-        surface -> h
-    };
-
-    SDL_RenderCopy(renderer, texture, NULL, & rect);
-
-    SDL_FreeSurface(surface);
-    SDL_DestroyTexture(texture);
-}
-
-void drawGrid(SDL_Renderer * renderer) {
-    SDL_SetRenderDrawColor(renderer, 255 / 5, 255 / 5, 255 / 5, 100);
-    for (int i = 0; i < width; i += GRID_SIZE) {
-        SDL_RenderDrawLine(renderer, i, 0, i, height);
-    }
-    for (int i = 0; i < height; i += GRID_SIZE) {
-        SDL_RenderDrawLine(renderer, 0, i, width, i);
-    }
-}
-
-void drawFilledCells(SDL_Renderer * renderer, int cells[width / GRID_SIZE][height / GRID_SIZE]) {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    for (int i = 0; i < width / GRID_SIZE; ++i) {
-        for (int j = 0; j < height / GRID_SIZE; ++j) {
-            if (cells[i][j]) {
-                SDL_Rect rect = {
-                    i * GRID_SIZE,
-                    j * GRID_SIZE,
-                    GRID_SIZE,
-                    GRID_SIZE
-                };
-                SDL_RenderFillRect(renderer, & rect);
-            }
-        }
-    }
-}
-
-int countNeighbours(int x, int y, int grid[width / GRID_SIZE][height / GRID_SIZE]) {
+int countNeighbours(int x, int y, int grid[GRID_WIDTH][GRID_HEIGHT]) {
     int n = 0;
     int neighborOffsets[8][2] = {
         {-1, -1}, {0, -1}, {1, -1},
@@ -86,7 +22,7 @@ int countNeighbours(int x, int y, int grid[width / GRID_SIZE][height / GRID_SIZE
         int newX = x + neighborOffsets[i][0];
         int newY = y + neighborOffsets[i][1];
 
-        if (newX >= 0 && newX < width / GRID_SIZE && newY >= 0 && newY < height / GRID_SIZE) {
+        if (newX >= 0 && newX < GRID_WIDTH && newY >= 0 && newY < GRID_HEIGHT) {
             if (grid[newX][newY] == 1) {
                 n++;
             }
@@ -96,14 +32,12 @@ int countNeighbours(int x, int y, int grid[width / GRID_SIZE][height / GRID_SIZE
     return n;
 }
 
-int logic(int grid[width / GRID_SIZE][height / GRID_SIZE]) {
-    int newGrid[width / GRID_SIZE][height / GRID_SIZE] = {
-        0
-    };
+int logic(int grid[GRID_WIDTH][GRID_HEIGHT]) {
+    int newGrid[GRID_WIDTH][GRID_HEIGHT] = {0};
     int moved = 0;
 
-    for (int i = 0; i < width / GRID_SIZE; i++) {
-        for (int j = 0; j < height / GRID_SIZE; j++) {
+    for (int i = 0; i < GRID_WIDTH; i++) {
+        for (int j = 0; j < GRID_HEIGHT; j++) {
             int neighbors = countNeighbours(i, j, grid);
 
             if (grid[i][j] == 1) {
@@ -126,7 +60,6 @@ int logic(int grid[width / GRID_SIZE][height / GRID_SIZE]) {
     return moved;
 }
 
-
 int main(int argc, char **argv) {
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -135,7 +68,8 @@ int main(int argc, char **argv) {
     }
 
     // Create SDL window and renderer
-    SDL_Window *window = SDL_CreateWindow("Conway's Game of Life", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width + UI_WIDTH, height, SDL_WINDOW_OPENGL);
+    //make fullscreen 
+    SDL_Window *window = SDL_CreateWindow("Game of Life", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
     if (!window) {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
         SDL_Quit();
@@ -167,7 +101,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    int cells[width / GRID_SIZE][height / GRID_SIZE] = {0};
+    int cells[GRID_WIDTH][GRID_HEIGHT] = {0};
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
@@ -181,7 +115,11 @@ int main(int argc, char **argv) {
     int delay = 1000 / speed;
 
     Uint32 lastUpdateTime = SDL_GetTicks();
-
+    
+    int grid_size = GRID_SIZE;
+    
+    int zoom_x = GRID_WIDTH / 2; 
+    int zoom_y = GRID_HEIGHT / 2;
     while (running) {
         // Process events without delay
         while (SDL_PollEvent(&event)) {
@@ -192,8 +130,8 @@ int main(int argc, char **argv) {
             if ((event.type == SDL_MOUSEBUTTONDOWN) && placing) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                int rx = x / GRID_SIZE;
-                int ry = y / GRID_SIZE;
+                int rx = (x - GRID_MARGIN_X) / grid_size;
+                int ry = (y - GRID_MARGIN_Y) / grid_size;
 
                 if (event.button.button == SDL_BUTTON_LEFT) {
                     cells[rx][ry] = 1;
@@ -210,13 +148,16 @@ int main(int argc, char **argv) {
             if (event.type == SDL_MOUSEMOTION && placing && mouseDown) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                int rx = x / GRID_SIZE;
-                int ry = y / GRID_SIZE;
+               
+                int rx = (x - GRID_MARGIN_X) / grid_size;
+                int ry = (y - GRID_MARGIN_Y) / grid_size;
 
-                if (event.motion.state & SDL_BUTTON_LMASK) {
-                    cells[rx][ry] = 1;
-                } else if (event.motion.state & SDL_BUTTON_RMASK) {
-                    cells[rx][ry] = 0;
+                if(rx >= 0 && rx < GRID_WIDTH && ry >= 0 && ry < GRID_HEIGHT) {
+                    if (event.motion.state & SDL_BUTTON_LMASK) {
+                        cells[rx][ry] = 1;
+                    } else if (event.motion.state & SDL_BUTTON_RMASK) {
+                        cells[rx][ry] = 0;
+                    }
                 }
             }
 
@@ -242,6 +183,21 @@ int main(int argc, char **argv) {
                         break;
                 }
             }
+            if(event.type == SDL_MOUSEWHEEL){
+                if(event.wheel.y > 0){
+                    if(grid_size < 10){
+                        grid_size += ZOOP_STEP;
+                    }
+                }else{
+                    if(grid_size > 1){
+                        grid_size -= ZOOP_STEP;
+                    }
+                }
+            
+                SDL_GetMouseState(&zoom_x, &zoom_y);
+                zoom_x = (zoom_x - GRID_MARGIN_X) / grid_size;
+                zoom_y = (zoom_y - GRID_MARGIN_Y) / grid_size;
+            }
         }
 
         if (!placing && SDL_GetTicks() - lastUpdateTime > delay) {
@@ -253,32 +209,31 @@ int main(int argc, char **argv) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        drawGrid(renderer);
-        drawFilledCells(renderer, cells);
+        drawGrid(renderer,grid_size);
+        drawFilledCells(renderer, cells,grid_size);
 
-        renderString(renderer, font, width + 40, 100, "Game of Life");
+        renderString(renderer, font, GRID_MARGIN_X + GRID_SPACE_X + 40, 100, "Game of Life");
 
         char GenerationString[50];
         sprintf(GenerationString, "Generation : %d", generation);
-        renderString(renderer, font, width + 40, 200, GenerationString);
+        renderString(renderer, font, GRID_MARGIN_X + GRID_SPACE_X + 40, 200, GenerationString);
 
-        renderString(renderer, font, width + 40, height / 2 - 25, placing ? "Placing..." : "Running...");
-        renderString(renderer, font, width + 40, height / 2, "LMB to place");
-        renderString(renderer, font, width + 40, height / 2 + 50, "RMB to remove");
-        renderString(renderer, font, width + 40, height / 2 + 100, "Space to toggle");
-        renderString(renderer, font, width + 40, height / 2 + 200, "A/D to change speed");
+        renderString(renderer, font, GRID_MARGIN_X + GRID_SPACE_X + 40, height / 2 - 25, placing ? "Placing..." : "Running...");
+        renderString(renderer, font, GRID_MARGIN_X + GRID_SPACE_X + 40, height / 2, "LMB to place");
+        renderString(renderer, font, GRID_MARGIN_X + GRID_SPACE_X + 40, height / 2 + 25, "RMB to erase");
+        renderString(renderer, font, GRID_MARGIN_X + GRID_SPACE_X + 40, height / 2 + 100, "Space to toggle");
+        renderString(renderer, font, GRID_MARGIN_X + GRID_SPACE_X + 40, height / 2 + 200, "A/D to change speed");
 
         char SpeedString[50];
         sprintf(SpeedString, "Speed : %d", speed);
-        renderString(renderer, font, width + 40, height / 2 + 150, SpeedString);
-
+        renderString(renderer, font, GRID_MARGIN_X + GRID_SPACE_X + 40, height / 2 + 150, SpeedString);
         SDL_RenderPresent(renderer);
     }
 
-    // Cleanup
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-
+    TTF_CloseFont(font);
+    TTF_Quit();
     return 0;
 }

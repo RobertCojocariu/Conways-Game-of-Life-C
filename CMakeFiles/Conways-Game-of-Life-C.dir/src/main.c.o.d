@@ -175,4 +175,13 @@ CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.o: \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_ttf.h \
  /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/constants.h \
  /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/UI.h \
- /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/constants.h
+ /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/constants.h \
+ /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/buttons.h \
+ /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/schems.h \
+ /usr/include/dirent.h /usr/include/bits/dirent.h \
+ /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h \
+ /usr/include/linux/limits.h \
+ /usr/include/bits/pthread_stack_min-dynamic.h \
+ /usr/include/bits/pthread_stack_min.h /usr/include/bits/dirent_ext.h \
+ /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/buttons.h \
+ /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/schems.h

@@ -13,20 +13,18 @@
 #define height 800
 #define UI_WIDTH 450
 
-#define GRID_SIZE 15 //default size of cell 
+#define GRID_SIZE 10//default size of cell 
 
-#define GRID_WIDTH 1000 //cells 
-#define GRID_HEIGHT 500 //cells
+#define GRID_WIDTH 120//cells 
+#define GRID_HEIGHT 70 //cells
 
-#define GRID_SPACE_X 1920 / 2//px 
-#define GRID_SPACE_Y 1080 /2 //px
 
 #define GRID_MARGIN_X 100 //offset 
 #define GRID_MARGIN_Y 100 //offset
 
 #define FONT_PATH "./PixelFont7-G02A.ttf"
 
-#define ZOOP_STEP 1
+#define ZOOM_STEP 1
 
 
 #endif // ! CONSTANTS

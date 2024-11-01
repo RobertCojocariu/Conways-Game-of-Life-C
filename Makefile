@@ -177,6 +177,30 @@ src/main.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Conways-Game-of-Life-C.dir/build.make CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.s
 .PHONY : src/main.c.s
 
+src/schems.o: src/schems.c.o
+.PHONY : src/schems.o
+
+# target to build an object file
+src/schems.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Conways-Game-of-Life-C.dir/build.make CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.o
+.PHONY : src/schems.c.o
+
+src/schems.i: src/schems.c.i
+.PHONY : src/schems.i
+
+# target to preprocess a source file
+src/schems.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Conways-Game-of-Life-C.dir/build.make CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.i
+.PHONY : src/schems.c.i
+
+src/schems.s: src/schems.c.s
+.PHONY : src/schems.s
+
+# target to generate assembly for a file
+src/schems.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Conways-Game-of-Life-C.dir/build.make CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.s
+.PHONY : src/schems.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -192,6 +216,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/schems.o"
+	@echo "... src/schems.i"
+	@echo "... src/schems.s"
 .PHONY : help
 
 

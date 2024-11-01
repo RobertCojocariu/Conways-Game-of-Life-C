@@ -9,6 +9,7 @@ include_directories(include)
 set(SOURCES
     src/main.c
     src/UI.c
+    src/schems.c
     # Add any other .c files you have here
 )
 

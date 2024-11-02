@@ -76,7 +76,7 @@ int isSchemHovered(Schematic * schematic, int x, int y) {
 
 void drawSchematic(SDL_Renderer* renderer, Schematic* schematic, TTF_Font* font) {
     // Set fixed size for the schematic card
-    schematic->rect.w = 100;
+    schematic->rect.w = 150;
     schematic->rect.h = 100;
 
     // Background color for the card
@@ -129,6 +129,12 @@ void drawSchematic(SDL_Renderer* renderer, Schematic* schematic, TTF_Font* font)
 
     // Render the name
     SDL_Color white = {255, 255, 255, 255};
+    if(strlen(schematic->name) > 17) {
+        schematic->name[17] = '\0';
+        schematic->name[16] = '.'; 
+        schematic->name[15] = '.'; 
+        schematic->name[14] = '.';
+    }
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, schematic->name, white);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
     SDL_FreeSurface(textSurface);
@@ -136,58 +142,4 @@ void drawSchematic(SDL_Renderer* renderer, Schematic* schematic, TTF_Font* font)
     SDL_DestroyTexture(textTexture);
 }
 
-void loadSchematic(Schematic* schematic, TTF_Font* font, SDL_Renderer* renderer) {
-    // Read and store the schematic name
-    char name[50];
-    fscanf(schematic->file, "%s", name);
-    schematic->name = strdup(name);
 
-    // Read schematic width and height, and initialize rect
-    int schemWidth, schemHeight;
-    fscanf(schematic->file, "%d %d", &schemWidth, &schemHeight);
-    schematic->rect.w = schemWidth * 10;  // Example: cell size 10
-    schematic->rect.h = schemHeight * 10;
-    
-    schematic->sW = schemWidth; 
-    schematic->sH = schemHeight;
-    // Allocate memory for cells
-    schematic->cells = (int**)malloc(schemHeight * sizeof(int*));
-    for (int i = 0; i < schemHeight; i++) {
-        schematic->cells[i] = (int*)malloc(schemWidth * sizeof(int));
-    }
-
-    // Load cell data from the file
-    for (int i = 0; i < schemHeight; i++) {
-        for (int j = 0; j < schemWidth; j++) {
-            fscanf(schematic->file, "%1d", &schematic->cells[i][j]);
-        }
-    }
-
-    // Optional: Create a preview texture based on loaded cells
-    SDL_Surface* surface = SDL_CreateRGBSurface(0, schematic->rect.w, schematic->rect.h, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
-    if (!surface) {
-        printf("Surface creation error: %s\n", SDL_GetError());
-        return;
-    }
-
-    // Draw cells onto the surface
-    SDL_Rect cellRect = { 0, 0, 10, 10 };  // Each cell is 10x10 pixels
-    for (int i = 0; i < schemHeight; i++) {
-        for (int j = 0; j < schemWidth; j++) {
-            if (schematic->cells[i][j] == 1) {
-                cellRect.x = j * 10;
-                cellRect.y = i * 10;
-                SDL_FillRect(surface, &cellRect, SDL_MapRGB(surface->format, 255, 255, 255));  // White cells
-            }
-        }
-    }
-
-
-    // Convert surface to texture
-    schematic->preview = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-
-    fclose(schematic->file);
-    
-
-}

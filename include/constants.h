@@ -25,6 +25,6 @@
 #define FONT_PATH "./PixelFont7-G02A.ttf"
 
 #define ZOOM_STEP 1
-
+#define SCHEM_IN_PAGE 15
 
 #endif // ! CONSTANTS

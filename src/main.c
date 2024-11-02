@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
     int mouse_x, mouse_y; 
 
     int text_offset = GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40;
-
+    int page = 2;
 
     //Initialize buttons 
     Button play = {
@@ -193,7 +193,18 @@ int main(int argc, char **argv) {
         "Clear",
         NULL
     };
-    /////
+
+    SDL_Rect schematicBackground = {
+        text_offset - 15,
+        GRID_MARGIN_Y,
+        500,
+        (GRID_HEIGHT * GRID_SIZE)
+    };
+
+
+
+
+
 
     ///// schematics 
     
@@ -205,9 +216,7 @@ int main(int argc, char **argv) {
         return 1;
     } 
 
-    for(int i = 0; i < schemCount; i++) {
-        printf("%s\n", schemFiles[i]);
-    }
+    
        
     Schematic schematics[schemCount];
 
@@ -217,10 +226,10 @@ int main(int argc, char **argv) {
     for(int i = 0; i < schemCount; i++) {
 
         schematics[i].rect = (SDL_Rect) {
-            text_offset,
-            GRID_MARGIN_Y + i * 50 *2,
-            200,
-            50};
+            text_offset + (i % 3) * 160 ,
+            GRID_MARGIN_Y + ((i % SCHEM_IN_PAGE)/3) * 120 + 50,
+            150,
+            100};
 
 
         char *fullPath = malloc(strlen(path) + strlen(schemFiles[i]) + 1);
@@ -230,15 +239,53 @@ int main(int argc, char **argv) {
         schematics[i].name = schemFiles[i];
         schematics[i].preview = NULL;
 
-        loadSchematic(&schematics[i], schemFont, renderer);
+        if(loadSchematic(&schematics[i], schemFont, renderer)) {
+            schemCount--; 
+            i--;
+        }
 
         free(fullPath);
 
     }
     
-        
+
+
+
+    //show only 15 schematics per page
+    int schemCountModulated = page * SCHEM_IN_PAGE > schemCount ? schemCount % SCHEM_IN_PAGE: SCHEM_IN_PAGE; 
+    int totalPages = schemCount / SCHEM_IN_PAGE + 1;
     //////
     
+    char pageLabelString[10];
+    // 1 / 2 
+    sprintf(pageLabelString, "%d / %d", page, totalPages);
+
+
+    Button pageLabel = {
+        (SDL_Rect) {schematicBackground.x + schematicBackground.w/2 - 50, GRID_MARGIN_Y + GRID_HEIGHT * GRID_SIZE + 20, 100, 50},
+        (SDL_Color) {0,0, 0, 255},
+        (SDL_Color) {255,255,255, 255},
+        pageLabelString,
+        NULL
+    };
+    Button prevPage = {
+        //draw it 10 px before the page label 
+        (SDL_Rect) {pageLabel.rect.x - 60, pageLabel.rect.y, 50, 50},
+        (SDL_Color) {0,0, 0, 255},
+        (SDL_Color) {255,255,255, 255},
+        "<",
+        NULL
+    };
+
+    Button nextPage = {
+        //draw it 10 px after the page label 
+        (SDL_Rect) {pageLabel.rect.x + pageLabel.rect.w + 10, pageLabel.rect.y, 50, 50},
+        (SDL_Color) {0,0, 0, 255},
+        (SDL_Color) {255,255,255, 255},
+        ">",
+        NULL
+    };
+
     int indexOfSchemPressed = -1; 
 
     while (running) {
@@ -287,7 +334,7 @@ int main(int argc, char **argv) {
                         }
                         break;
                     case SDLK_d:
-                        if (speed < 30) {
+                        if (speed < 100) {
                             speed++;
                             delay = 1000 / speed;
                         }
@@ -318,11 +365,23 @@ int main(int argc, char **argv) {
                     generation = 0;
                     placing = 1;
                 }
+                else if(isHovered(&nextPage, mouse_x, mouse_y)) {
+                    page = page % totalPages + 1;
+                    schemCountModulated = page * SCHEM_IN_PAGE > schemCount ? schemCount % SCHEM_IN_PAGE: SCHEM_IN_PAGE; 
+                    sprintf(pageLabelString, "%d / %d", page, totalPages);
+                    pageLabel.text = pageLabelString;
+                }
+                else if(isHovered(&prevPage, mouse_x, mouse_y)) {
+                    page = page == 1 ? totalPages : page - 1;
+                    schemCountModulated = page * SCHEM_IN_PAGE > schemCount ? schemCount % SCHEM_IN_PAGE: SCHEM_IN_PAGE; 
+                    sprintf(pageLabelString, "%d / %d", page, totalPages);
+                    pageLabel.text = pageLabelString;
+                }
                 
-                for(int i = 0; i < schemCount; i++) {
-                    if(isSchemHovered(&schematics[i], mouse_x, mouse_y)) {
+                for(int i = 0; i < schemCountModulated; i++) {
+                    if(isSchemHovered(&schematics[i + (page-1) * SCHEM_IN_PAGE], mouse_x, mouse_y)) {
                         placing = 2; 
-                        indexOfSchemPressed = i;
+                        indexOfSchemPressed = i + (page-1) * SCHEM_IN_PAGE;
                     }
                 }
 
@@ -345,19 +404,13 @@ int main(int argc, char **argv) {
                     }
                     for(int i = 0; i < schematics[indexOfSchemPressed].sW; i++) {
                         for(int j = 0; j < schematics[indexOfSchemPressed].sH; j++) {
-                            if(schematics[indexOfSchemPressed].cells[j][i] == 1) {
+                            if(schematics[indexOfSchemPressed].cells[j][i] == 1 && preview_x + i < GRID_WIDTH && preview_y + j < GRID_HEIGHT) {
                                 cells[preview_x + i][preview_y + j] = 1;
                             }
                         }
                     }
                     
                 }
-
-                
-
-
-
-
             }
 
         }
@@ -383,9 +436,16 @@ int main(int argc, char **argv) {
         drawGrid(renderer);
         drawFilledCells(renderer, cells);
 
+        SDL_SetRenderDrawColor(renderer, 25,25,25, 100);
+        SDL_RenderFillRect(renderer, &schematicBackground);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); 
+        SDL_RenderDrawRect(renderer, &schematicBackground);
 
         renderString(renderer, font, GRID_MARGIN_X, GRID_MARGIN_Y/2, "Conway's Game of Life");
-
+        int font_width; 
+        TTF_SizeText(font, "Schematics", &font_width, NULL);
+        renderString(renderer, font, text_offset + 250 - font_width / 2, GRID_MARGIN_Y + 15, "Schematics");
+        
         char GenerationString[50];
         sprintf(GenerationString, "Generation : %d", generation);
         generationLabel.text = GenerationString;
@@ -401,39 +461,24 @@ int main(int argc, char **argv) {
         drawButton(renderer, &decSpeed, font);
         drawButton(renderer, &incSpeed, font);
         drawButton(renderer, &clear, font);
+        drawButton(renderer, &nextPage, font);
+        drawButton(renderer, &prevPage, font);
         //fake labels
         drawButton(renderer, &statusLabel, font);
         drawButton(renderer, &generationLabel, font); 
         drawButton(renderer, &speedLabel, font);
-    
+        drawButton(renderer, &pageLabel, font);
+
         //draw schematic 
-        for(int i = 0; i < schemCount; i++) {
-            drawSchematic(renderer, &schematics[i],schemFont);
+        for(int i = 0; i < schemCountModulated; i++) {
+            drawSchematic(renderer, &schematics[i + (page-1) * SCHEM_IN_PAGE],schemFont);
         }
 
-                // if (placing == 2) {
-                //     int preview_x = (mouse_x - GRID_MARGIN_X) / grid_size;
-                //     int preview_y = (mouse_y - GRID_MARGIN_Y) / grid_size;
-                //     SDL_SetRenderDrawColor(renderer, 128, 128, 128, 128);  // Set shadow color
-                //
-                //     // Draw shadow of schematic at mouse position
-                //     for (int i = 0; i < 4; i++) {
-                //         for (int j = 0; j < 4; j++) {
-                //             if (schematic1.cells[j][i] == 1) {
-                //                 SDL_Rect cell = {
-                //                     GRID_MARGIN_X + (preview_x + i) * grid_size,
-                //                     GRID_MARGIN_Y + (preview_y + j) * grid_size,
-                //                     grid_size,
-                //                     grid_size
-                //                 };
-                //                 SDL_RenderFillRect(renderer, &cell);
-                //             }
-                //         }
-                //     }
-                // }
+
         if(placing == 2) {
             placeSchematic(renderer, &schematics[indexOfSchemPressed], mouse_x, mouse_y, placing);
         }
+        
 
         SDL_RenderPresent(renderer);
     }

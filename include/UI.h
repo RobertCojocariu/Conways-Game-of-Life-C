@@ -16,7 +16,6 @@ void drawButton(SDL_Renderer * renderer, Button * button, TTF_Font * font);
 int isHovered(Button * button, int x, int y);
 
 void drawSchematic(SDL_Renderer * renderer, Schematic * schematic, TTF_Font * font);
-void loadSchematic(Schematic * schematic, TTF_Font * font, SDL_Renderer * renderer);
 int isSchemHovered(Schematic * schematic, int x, int y);
 #endif // !UI_H
 

@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
     int mouse_x, mouse_y; 
 
     int text_offset = GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40;
-    int page = 2;
+    int page = 1;
 
     //Initialize buttons 
     Button play = {

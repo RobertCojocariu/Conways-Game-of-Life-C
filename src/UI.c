@@ -96,7 +96,7 @@ void drawSchematic(SDL_Renderer* renderer, Schematic* schematic, TTF_Font* font)
     SDL_QueryTexture(schematic->preview, NULL, NULL, &original_width, &original_height);
 
     float aspect_ratio = (float)original_width / original_height;
-    if (aspect_ratio > 1) {
+    if (aspect_ratio > 1.5) {
         // Image is wider, scale based on width
         previewRect.w = max_preview_width;
         previewRect.h = max_preview_width / aspect_ratio;

@@ -14,5 +14,6 @@ typedef struct Schematic {
 char **get_txt_files(const char *directory_path, int *count);
 void placeSchematic(SDL_Renderer * renderer, Schematic * schematic,  int mouse_x, int mouse_y, int placing);
 int loadSchematic(Schematic* schematic, TTF_Font* font, SDL_Renderer* renderer);
+void enableSelectionMode(SDL_Renderer * renderer, int mouse_x, int mouse_y, SDL_Event * event);
 #endif // !SCHEMS_H 
 

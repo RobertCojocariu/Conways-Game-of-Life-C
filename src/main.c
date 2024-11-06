@@ -201,6 +201,14 @@ int main(int argc, char **argv) {
         (GRID_HEIGHT * GRID_SIZE)
     };
 
+    Button selectionMode = {
+        (SDL_Rect) {incSpeed.rect.x + 50 + 20, height + 20, 50, 50},
+        (SDL_Color) {0,0, 0, 255},
+        (SDL_Color) {255,255,255, 255},
+        "~",
+        NULL
+    };
+
 
 
 
@@ -287,6 +295,9 @@ int main(int argc, char **argv) {
     };
 
     int indexOfSchemPressed = -1; 
+    int selecting = 0;
+    int selection_start_x, selection_start_y;
+    int selection_end_x, selection_end_y;
 
     while (running) {
         // Process events without delay
@@ -377,6 +388,9 @@ int main(int argc, char **argv) {
                     sprintf(pageLabelString, "%d / %d", page, totalPages);
                     pageLabel.text = pageLabelString;
                 }
+                else if(isHovered(&selectionMode, mouse_x, mouse_y)) {
+                    placing = 3;
+                }
                 
                 for(int i = 0; i < schemCountModulated; i++) {
                     if(isSchemHovered(&schematics[i + (page-1) * SCHEM_IN_PAGE], mouse_x, mouse_y)) {
@@ -385,7 +399,6 @@ int main(int argc, char **argv) {
                     }
                 }
 
-                
                 if (placing == 2) {
                     if (event.button.button == SDL_BUTTON_RIGHT) {
                         placing = 1;
@@ -411,7 +424,47 @@ int main(int argc, char **argv) {
                     }
                     
                 }
+
             }
+
+                
+            if (placing == 3) {
+                if (event.button.button == SDL_BUTTON_RIGHT) {
+                    placing = 1;
+                    break;
+                }
+                if (mouse_x < GRID_MARGIN_X || mouse_x >= GRID_MARGIN_X + GRID_WIDTH * grid_size ||
+                    mouse_y < GRID_MARGIN_Y || mouse_y >= GRID_MARGIN_Y + GRID_HEIGHT * grid_size) {
+                    break;
+                }
+
+
+                if (event.type == SDL_MOUSEBUTTONDOWN) {
+                    printf("Mouse down\n");
+                    // Start selection on left mouse button down
+                    if (placing == 3 && event.button.button == SDL_BUTTON_LEFT) {
+                        selecting = 1;
+                        selection_start_x = (mouse_x - GRID_MARGIN_X) / grid_size;
+                        selection_start_y = (mouse_y - GRID_MARGIN_Y) / grid_size;
+                        selection_end_x = selection_start_x;
+                        selection_end_y = selection_start_y;
+                    }
+                }
+
+                if (event.type == SDL_MOUSEMOTION && selecting) {
+                    // Update the selection rectangle coordinates
+                    selection_end_x = (mouse_x - GRID_MARGIN_X) / grid_size;
+                    selection_end_y = (mouse_y - GRID_MARGIN_Y) / grid_size;
+                }
+
+                if (event.type == SDL_MOUSEBUTTONUP) {
+                    // Finalize selection on mouse release
+                    selecting = 0;
+                    printf("Selected %d cells\n", (selection_end_x - selection_start_x + 1) * (selection_end_y - selection_start_y + 1));
+                    placing = 1;
+                }
+            }         
+            
 
         }
 
@@ -463,6 +516,7 @@ int main(int argc, char **argv) {
         drawButton(renderer, &clear, font);
         drawButton(renderer, &nextPage, font);
         drawButton(renderer, &prevPage, font);
+        drawButton(renderer, &selectionMode, font);
         //fake labels
         drawButton(renderer, &statusLabel, font);
         drawButton(renderer, &generationLabel, font); 
@@ -478,7 +532,17 @@ int main(int argc, char **argv) {
         if(placing == 2) {
             placeSchematic(renderer, &schematics[indexOfSchemPressed], mouse_x, mouse_y, placing);
         }
-        
+        if (selecting) {
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 128); // Semi-transparent white
+            SDL_Rect selectionRect = {
+                .x = GRID_MARGIN_X + selection_start_x * grid_size,
+                .y = GRID_MARGIN_Y + selection_start_y * grid_size,
+                .w = (selection_end_x - selection_start_x + 1) * grid_size,
+                .h = (selection_end_y - selection_start_y + 1) * grid_size
+            };
+            SDL_RenderDrawRect(renderer, &selectionRect);
+        }
+            
 
         SDL_RenderPresent(renderer);
     }

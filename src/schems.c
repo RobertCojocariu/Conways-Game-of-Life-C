@@ -168,3 +168,5 @@ int loadSchematic(Schematic* schematic, TTF_Font* font, SDL_Renderer* renderer) 
     fclose(schematic->file);
     return 0;
 }
+
+

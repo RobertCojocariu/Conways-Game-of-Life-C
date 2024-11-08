@@ -1,5 +1,6 @@
 #include "../include/schems.h"
 #include "../include/constants.h"
+#include <stdio.h>
 
 char **get_txt_files(const char *directory_path, int *count) {
     int capacity = 10;   // Initial capacity for the filenames array
@@ -87,14 +88,24 @@ void placeSchematic(SDL_Renderer * renderer, Schematic * schematic,  int mouse_x
 }
 
 int loadSchematic(Schematic* schematic, TTF_Font* font, SDL_Renderer* renderer) {
-    // Read and store the schematic name
+
     char name[50];
+    
     if (fscanf(schematic->file, "%49s", name) != 1) {
-        printf("Error: Could not read schematic name. Skipping schematic.\n");
+        printf("Error: Invalid schematic name. Skipping schematic.\n");
+        fclose(schematic->file);
+        free(schematic->name);
+        return 1;
+    }
+
+    // Allocate and copy name to schematic
+    schematic->name = malloc(strlen(name) + 1);
+    if (schematic->name == NULL) {
+        printf("Error: Memory allocation for schematic name failed\n");
         fclose(schematic->file);
         return 1;
     }
-    schematic->name = strdup(name);
+    strcpy(schematic->name, name);
 
     // Read schematic width and height, and initialize rect
     int schemWidth, schemHeight;
@@ -111,9 +122,9 @@ int loadSchematic(Schematic* schematic, TTF_Font* font, SDL_Renderer* renderer) 
     schematic->sH = schemHeight;
 
     // Allocate memory for cells
-    schematic->cells = (int**)malloc(schemHeight * sizeof(int*));
+    schematic->cells = malloc(schemHeight * sizeof(int*));
     for (int i = 0; i < schemHeight; i++) {
-        schematic->cells[i] = (int*)malloc(schemWidth * sizeof(int));
+        schematic->cells[i] = malloc(schemWidth * sizeof(int));
     }
 
     // Load cell data from the file
@@ -135,24 +146,123 @@ int loadSchematic(Schematic* schematic, TTF_Font* font, SDL_Renderer* renderer) 
     }
 
     // Create a surface for rendering the schematic preview
-    SDL_Surface* surface = SDL_CreateRGBSurface(0, schematic->rect.w, schematic->rect.h, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+    createSchematicPreview(schematic, renderer);
+    fclose(schematic->file);
+    return 0;
+}
+
+
+int saveSchematic(void *sCells, int sW, int sH, Schematic *schematics, int *schemCount, SDL_Renderer *renderer, TTF_Font *font, int index, int textOffset)  {
+    if(sW <= 0 || sH <= 0) {
+        printf("Error: Schematic dimensions are invalid\n");
+        return 0;
+    } 
+    if(*schemCount >= MAX_SCHEMATICS) {
+        printf("Error: Maximum number of schematics reached\n");
+        return 0;
+    }
+  
+    // cast the void pointer to a 2D array 
+    int (*intCells)[sW] = (int (*)[sW]) sCells; 
+    
+    // allocate memory & duplicate the matrix
+    int **cells = malloc(sH * sizeof(int *));
+    for (int i = 0; i < sH; i++) {
+        cells[i] = malloc(sW * sizeof(int));
+        for (int j = 0; j < sW; j++) {
+            cells[i][j] = intCells[i][j]; 
+        }
+    }    
+
+    // Prompt for and allocate schematic name
+    char nameInput[50];
+    printf("Enter schematic name: "); 
+    scanf("%49s", nameInput); 
+
+    Schematic newSchematic;
+    newSchematic.name = malloc(strlen(nameInput) + 1);
+    if (newSchematic.name == NULL) {
+        printf("Error: Memory allocation for schematic name failed\n");
+        return 0;
+    }
+    strcpy(newSchematic.name, nameInput);
+
+    newSchematic.cells = cells;
+    newSchematic.sW = sW;
+    newSchematic.sH = sH;
+    newSchematic.preview = NULL;
+
+    schematics[(*schemCount)++] = newSchematic; // dereference schemCount and increment it
+
+    char path[50]; 
+    
+    snprintf(path, sizeof(path), "schematics/%s.txt", newSchematic.name);
+    newSchematic.file = fopen(path, "w");
+    if (!newSchematic.file) {
+        printf("Error: Could not open file for saving schematic\n");
+        free(newSchematic.name);
+        return 0;
+    }
+    
+    // saving data into file 
+    fprintf(newSchematic.file, "%s\n", newSchematic.name);
+    fprintf(newSchematic.file, "%d %d\n", newSchematic.sW, newSchematic.sH);
+
+    for (int i = 0; i < newSchematic.sH; i++) {
+        for (int j = 0; j < newSchematic.sW; j++) {
+            fprintf(newSchematic.file, "%d", newSchematic.cells[i][j]);
+        }
+        fprintf(newSchematic.file, "\n");  
+    }
+
+    fclose(newSchematic.file);
+    newSchematic.file = fopen(path, "r");
+    printf("\nSchematic '%s' saved successfully.\n", newSchematic.name);
+
+    createSchematicRect(&newSchematic, index, textOffset); 
+    createSchematicPreview(&newSchematic, renderer);
+
+    printf("Schematic rect: %d %d %d %d\n", newSchematic.rect.x, newSchematic.rect.y, newSchematic.rect.w, newSchematic.rect.h);
+    return 1;
+}
+
+
+void createSchematicRect(Schematic *schematic, int index, int textOffset) {
+    schematic->rect = (SDL_Rect) {
+        textOffset + (index % 3) * 160,
+        GRID_MARGIN_Y + ((index % SCHEM_IN_PAGE) / 3) * 120 + 50,
+        150,
+        100
+    };
+    printf("Schematic rect: %d %d %d %d\n", schematic->rect.x, schematic->rect.y, schematic->rect.w, schematic->rect.h);
+}
+
+
+
+void createSchematicPreview(Schematic *schematic, SDL_Renderer *renderer) {
+    int sW = schematic->sW;
+    int sH = schematic->sH;
+
+    // Create a surface with the correct dimensions (10 pixels per cell)
+    SDL_Surface* surface = SDL_CreateRGBSurface(0, sW * 10, sH * 10, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
     if (!surface) {
         printf("Error: Surface creation failed for '%s': %s\n", schematic->name, SDL_GetError());
         fclose(schematic->file);
-        
+
         // Free allocated memory
-        for (int i = 0; i < schemHeight; i++) {
+        for (int i = 0; i < schematic->sH; i++) {
             free(schematic->cells[i]);
         }
         free(schematic->cells);
         free(schematic->name);
-        return 1;
+        schematic->preview = NULL;
+        return;
     }
 
     // Draw cells onto the surface
-    SDL_Rect cellRect = { 0, 0, 10, 10 }; 
-    for (int i = 0; i < schemHeight; i++) {
-        for (int j = 0; j < schemWidth; j++) {
+    SDL_Rect cellRect = { 0, 0, 10, 10 };
+    for (int i = 0; i < schematic->sH; i++) {
+        for (int j = 0; j < schematic->sW; j++) {
             if (schematic->cells[i][j] == 1) {
                 cellRect.x = j * 10;
                 cellRect.y = i * 10;
@@ -163,10 +273,9 @@ int loadSchematic(Schematic* schematic, TTF_Font* font, SDL_Renderer* renderer) 
 
     // Convert surface to texture
     schematic->preview = SDL_CreateTextureFromSurface(renderer, surface);
+    if (!schematic->preview) {
+        printf("Error: Texture creation failed for '%s': %s\n", schematic->name, SDL_GetError());
+    }
     SDL_FreeSurface(surface);
-
-    fclose(schematic->file);
-    return 0;
 }
-
 

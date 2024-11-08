@@ -1,1 +1,1 @@
-/usr/bin/cc "CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.o" "CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.o" "CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.o" -o Conways-Game-of-Life-C  -lSDL2 -lSDL2_image -lSDL2_ttf
+/usr/bin/cc -Wl,--dependency-file,CMakeFiles/Conways-Game-of-Life-C.dir/link.d "CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.o" "CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.o" "CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.o" -o Conways-Game-of-Life-C  -lSDL2 -lSDL2_image -lSDL2_ttf

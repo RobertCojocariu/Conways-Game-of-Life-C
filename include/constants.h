@@ -27,4 +27,5 @@
 #define ZOOM_STEP 1
 #define SCHEM_IN_PAGE 15
 
+#define MAX_SCHEMATICS 100
 #endif // ! CONSTANTS

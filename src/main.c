@@ -218,6 +218,9 @@ int main(int argc, char **argv) {
     
     //load the schematics 
     int schemCount = 0; 
+    int schemCapacity = 0;
+
+
     char **schemFiles = get_txt_files("./schematics", &schemCount); 
     if(schemFiles == NULL) {
         printf("Error loading schematics\n");
@@ -226,7 +229,7 @@ int main(int argc, char **argv) {
 
     
        
-    Schematic schematics[schemCount];
+    Schematic schematics[MAX_SCHEMATICS];
 
     //concatenate path to ./schematics/ 
     char path[] = "./schematics/"; 
@@ -246,9 +249,9 @@ int main(int argc, char **argv) {
         schematics[i].file = fopen(fullPath, "r");
         schematics[i].name = schemFiles[i];
         schematics[i].preview = NULL;
-
+        printf("LOADING SCHEM NAME : %s\n", schemFiles[i]);
         if(loadSchematic(&schematics[i], schemFont, renderer)) {
-            schemCount--; 
+            schemCount--;
             i--;
         }
 
@@ -441,7 +444,6 @@ int main(int argc, char **argv) {
 
                 if (event.type == SDL_MOUSEBUTTONDOWN) {
                     printf("Mouse down\n");
-                    // Start selection on left mouse button down
                     if (placing == 3 && event.button.button == SDL_BUTTON_LEFT) {
                         selecting = 1;
                         selection_start_x = (mouse_x - GRID_MARGIN_X) / grid_size;
@@ -452,16 +454,44 @@ int main(int argc, char **argv) {
                 }
 
                 if (event.type == SDL_MOUSEMOTION && selecting) {
-                    // Update the selection rectangle coordinates
                     selection_end_x = (mouse_x - GRID_MARGIN_X) / grid_size;
                     selection_end_y = (mouse_y - GRID_MARGIN_Y) / grid_size;
                 }
 
                 if (event.type == SDL_MOUSEBUTTONUP) {
-                    // Finalize selection on mouse release
                     selecting = 0;
                     printf("Selected %d cells\n", (selection_end_x - selection_start_x + 1) * (selection_end_y - selection_start_y + 1));
                     placing = 1;
+                    
+                    int sW = selection_end_x - selection_start_x + 1; 
+                    int sH = selection_end_y - selection_start_y + 1;
+
+                    if(sW < 0) sW *= -1; 
+                    if(sH < 0) sH *= -1;
+
+                    int sCells[sH][sW];
+                    for(int i = 0; i < sW; i++) {
+                        for(int j = 0; j < sH; j++) {
+                            sCells[j][i] = cells[selection_start_x + i][selection_start_y + j];
+                        }
+                    } 
+                    printf("CELLS BEFORE\n");
+                    for(int i = 0; i < sW; i++) {
+                        for(int j = 0; j < sH; j++) {
+                            printf("%d ", sCells[j][i]);
+                        }
+                        printf("\n");
+                    }
+
+                    if(saveSchematic(sCells, sW, sH, schematics, &schemCount, renderer, schemFont, schemCount, text_offset)) {
+                        printf("schematic saved\n");
+                        schemCountModulated = page * SCHEM_IN_PAGE > schemCount ? schemCount % SCHEM_IN_PAGE: SCHEM_IN_PAGE; //update schem count per page 
+                        totalPages = schemCount / SCHEM_IN_PAGE + 1; 
+                        
+                        createSchematicPreview(&schematics[schemCount - 1], renderer); 
+                        createSchematicRect(&schematics[schemCount - 1], schemCount - 1, text_offset);
+                    }
+
                 }
             }         
             
@@ -524,8 +554,12 @@ int main(int argc, char **argv) {
         drawButton(renderer, &pageLabel, font);
 
         //draw schematic 
+        Schematic lastAdded = schematics[schemCount - 1]; 
+        // printf("LAST ADDED SCHEM RECT : %d %d %d %d\n", lastAdded.rect.x, lastAdded.rect.y, lastAdded.rect.w, lastAdded.rect.h);
         for(int i = 0; i < schemCountModulated; i++) {
+            // printf("DRAWING SCHEMATIC %i, name %s\n", i, schematics[i + (page-1) * SCHEM_IN_PAGE].name);
             drawSchematic(renderer, &schematics[i + (page-1) * SCHEM_IN_PAGE],schemFont);
+            
         }
 
 

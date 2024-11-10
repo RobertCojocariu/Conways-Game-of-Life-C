@@ -1,7 +1,7 @@
-CMakeFiles/Conways-Game-of-Life-C.dir/src/buttons.c.o: \
- /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/buttons.c \
+CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.o: \
+ /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/schems.c \
  /usr/include/stdc-predef.h \
- /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/buttons.h \
+ /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/schems.h \
  /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/constants.h \
  /usr/include/SDL2/SDL_events.h /usr/include/SDL2/SDL_stdinc.h \
  /usr/include/SDL2/SDL_config.h /usr/include/SDL2/SDL_platform.h \
@@ -175,4 +175,11 @@ CMakeFiles/Conways-Game-of-Life-C.dir/src/buttons.c.o: \
  /usr/include/SDL2/SDL_version.h /usr/include/SDL2/SDL_locale.h \
  /usr/include/SDL2/SDL_misc.h /usr/include/SDL2/SDL_image.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_ttf.h \
+ /usr/include/dirent.h /usr/include/bits/dirent.h \
+ /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h \
+ /usr/include/linux/limits.h \
+ /usr/include/bits/pthread_stack_min-dynamic.h \
+ /usr/include/bits/pthread_stack_min.h /usr/include/bits/dirent_ext.h \
+ /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/UI.h \
+ /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/buttons.h \
  /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/constants.h

@@ -1,4 +1,5 @@
-#include <SDL2/SDL_events.h>
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
@@ -210,9 +211,40 @@ int main(int argc, char **argv) {
     };
 
 
+    TextField textField = {
+        (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40, GRID_MARGIN_Y + 500, 200, 50},
+        "new_schematic",
+        0
+    };
 
+    Button Ok = {
+        (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40, GRID_MARGIN_Y + 500, 100, 50},
+        (SDL_Color) {0,0, 0, 255},
+        (SDL_Color) {255,255,255, 255},
+        "ok",
+        NULL
+    };
+    Button Cancel = {
+        (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40, GRID_MARGIN_Y + 500, 100, 50},
+        (SDL_Color) {0,0, 0, 255},
+        (SDL_Color) {255,255,255, 255},
+        "cancel",
+        NULL
+    };
+    
+    int windowWidth, windowHeight;
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
 
-
+    OverlayedLabel nameSchemLabel = {
+        0,
+        //big laben in the middle of the screen 
+        (SDL_Rect) {windowWidth / 2 - 150, windowHeight / 2 - 200, 400, 200}, 
+        (SDL_Color) {255,0, 0, 255},
+        "Enter name",
+        &textField,
+        &Ok,
+        &Cancel,
+    };
 
     ///// schematics 
     
@@ -297,13 +329,21 @@ int main(int argc, char **argv) {
         NULL
     };
 
+
+
     int indexOfSchemPressed = -1; 
     int selecting = 0;
     int selection_start_x, selection_start_y;
     int selection_end_x, selection_end_y;
+    Uint32 lastKeyPressTime = 0; // Track the last key press time
+    const Uint32 initialDelay = 200; // Initial delay before repeating (ms)
+    const Uint32 repeatDelay = 50; // Delay between repeats (ms)
+
+    int selectionW, selectionH;
+    int **scCells;
+    char add = '\0';
 
     while (running) {
-        // Process events without delay
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = 0;
@@ -311,10 +351,12 @@ int main(int argc, char **argv) {
             
             SDL_GetMouseState(&mouse_x, &mouse_y);
 
+            
+
             if (((event.type == SDL_MOUSEBUTTONDOWN) && placing==1) || (event.type == SDL_MOUSEMOTION && placing==1 && mouseDown)) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                if(x >= GRID_MARGIN_X && x < GRID_MARGIN_X + GRID_WIDTH * grid_size && y >= GRID_MARGIN_Y && y < GRID_MARGIN_Y + GRID_HEIGHT * grid_size) { //in bound
+                if(x >= GRID_MARGIN_X && x < GRID_MARGIN_X + GRID_WIDTH * grid_size && y >= GRID_MARGIN_Y && y < GRID_MARGIN_Y + GRID_HEIGHT * grid_size && !nameSchemLabel.active) { //in bound
                     int rx = (x - GRID_MARGIN_X) / grid_size;
                     int ry = (y - GRID_MARGIN_Y) / grid_size;
 
@@ -330,14 +372,8 @@ int main(int argc, char **argv) {
             if (event.type == SDL_MOUSEBUTTONUP) {
                 mouseDown = 0;
             }
-
-
-
-            if (event.type == SDL_KEYDOWN) {
+            if (event.type == SDL_KEYDOWN && !nameSchemLabel.active) {
                 switch (event.key.keysym.sym) {
-                    case SDLK_q:
-                        running = 0;
-                        break;
                     case SDLK_SPACE:
                         placing = !placing;
                         break;
@@ -356,7 +392,7 @@ int main(int argc, char **argv) {
                 }
             }
 
-            if(event.type == SDL_MOUSEBUTTONDOWN) {
+            if(event.type == SDL_MOUSEBUTTONDOWN && !nameSchemLabel.active) {
                 if(isHovered(&play, mouse_x, mouse_y)) {
                     placing = !placing;
 
@@ -394,7 +430,8 @@ int main(int argc, char **argv) {
                 else if(isHovered(&selectionMode, mouse_x, mouse_y)) {
                     placing = 3;
                 }
-                
+
+
                 for(int i = 0; i < schemCountModulated; i++) {
                     if(isSchemHovered(&schematics[i + (page-1) * SCHEM_IN_PAGE], mouse_x, mouse_y)) {
                         placing = 2; 
@@ -402,7 +439,7 @@ int main(int argc, char **argv) {
                     }
                 }
 
-                if (placing == 2) {
+                if (placing == 2) { //placing schematics
                     if (event.button.button == SDL_BUTTON_RIGHT) {
                         placing = 1;
                         break;
@@ -428,16 +465,25 @@ int main(int argc, char **argv) {
                     
                 }
 
+            }//end of mouse down event
+
+            if(textField.focused) {
+                handleTextField(&textField, &event, repeatDelay, lastKeyPressTime);
             }
 
+
+            // Handle key presses
                 
-            if (placing == 3) {
+            if (placing == 3) { //selection mode
                 if (event.button.button == SDL_BUTTON_RIGHT) {
                     placing = 1;
+                    selecting = 0; 
+
                     break;
+
                 }
-                if (mouse_x < GRID_MARGIN_X || mouse_x >= GRID_MARGIN_X + GRID_WIDTH * grid_size ||
-                    mouse_y < GRID_MARGIN_Y || mouse_y >= GRID_MARGIN_Y + GRID_HEIGHT * grid_size) {
+                if (mouse_x < GRID_MARGIN_X - GRID_SIZE || mouse_x >= GRID_MARGIN_X + GRID_WIDTH * grid_size ||
+                    mouse_y < GRID_MARGIN_Y - GRID_SIZE || mouse_y >= GRID_MARGIN_Y + GRID_HEIGHT * grid_size) {
                     break;
                 }
 
@@ -453,50 +499,91 @@ int main(int argc, char **argv) {
                     }
                 }
 
-                if (event.type == SDL_MOUSEMOTION && selecting) {
+                if (event.type == SDL_MOUSEMOTION && selecting && event.button.button == SDL_BUTTON_LEFT) {
                     selection_end_x = (mouse_x - GRID_MARGIN_X) / grid_size;
                     selection_end_y = (mouse_y - GRID_MARGIN_Y) / grid_size;
                 }
 
+
                 if (event.type == SDL_MOUSEBUTTONUP) {
                     selecting = 0;
-                    printf("Selected %d cells\n", (selection_end_x - selection_start_x + 1) * (selection_end_y - selection_start_y + 1));
                     placing = 1;
+
+                    int sW = abs(selection_end_x - selection_start_x) + 1;
+                    int sH = abs(selection_end_y - selection_start_y) + 1;
+                    printf("Selection start: %d %d\n", selection_start_x, selection_start_y);
                     
-                    int sW = selection_end_x - selection_start_x + 1; 
-                    int sH = selection_end_y - selection_start_y + 1;
-
-                    if(sW < 0) sW *= -1; 
-                    if(sH < 0) sH *= -1;
-
-                    int sCells[sH][sW];
-                    for(int i = 0; i < sW; i++) {
-                        for(int j = 0; j < sH; j++) {
-                            sCells[j][i] = cells[selection_start_x + i][selection_start_y + j];
-                        }
-                    } 
-                    printf("CELLS BEFORE\n");
-                    for(int i = 0; i < sW; i++) {
-                        for(int j = 0; j < sH; j++) {
-                            printf("%d ", sCells[j][i]);
-                        }
-                        printf("\n");
+                    int temp;
+                    if(selection_start_x > selection_end_x) {
+                        temp  = selection_start_x;
+                        selection_start_x = selection_end_x;
+                        selection_end_x = temp;
+                    }
+                    if(selection_start_y > selection_end_y) {
+                        temp  = selection_start_y;
+                        selection_start_y = selection_end_y;
+                        selection_end_y = temp;
                     }
 
-                    if(saveSchematic(sCells, sW, sH, schematics, &schemCount, renderer, schemFont, schemCount, text_offset)) {
+                    int sCells[sH][sW];
+                    for (int i = 0; i < sW; i++) {
+                        for (int j = 0; j < sH; j++) {
+                            sCells[j][i] = cells[selection_start_x + i][selection_start_y + j];
+                        }
+                    }
+
+                    scCells = malloc(sH * sizeof(int *));
+                    for (int i = 0; i < sH; i++) {
+                        scCells[i] = malloc(sW * sizeof(int));
+                        for (int j = 0; j < sW; j++) {
+                            scCells[i][j] = sCells[i][j];
+                        }
+                    }
+
+                    if (sW <= 0 || sH <= 0 || schemCount >= MAX_SCHEMATICS) {
+                        return 0;
+                    }
+                    
+                    nameSchemLabel.active = 1;
+                    strcpy(nameSchemLabel.txt->text, "new_schematic");
+                    selectionW = sW;
+                }
+
+
+            }// end of selection mode  
+            if(event.type == SDL_MOUSEBUTTONDOWN && nameSchemLabel.active) {
+                drawOverlayedLabel(renderer, &nameSchemLabel, font);
+                if(isHovered(&Ok, mouse_x, mouse_y)) {
+                    placing = 1;
+                    nameSchemLabel.active = 0; 
+                    if (saveSchematic(scCells, selectionW, selectionW, schematics, &schemCount, renderer, schemFont, schemCount, text_offset, &nameSchemLabel)) {
+                        free(scCells);
                         printf("schematic saved\n");
-                        schemCountModulated = page * SCHEM_IN_PAGE > schemCount ? schemCount % SCHEM_IN_PAGE: SCHEM_IN_PAGE; //update schem count per page 
-                        totalPages = schemCount / SCHEM_IN_PAGE + 1; 
+                        schemCountModulated = page * SCHEM_IN_PAGE > schemCount ? schemCount % SCHEM_IN_PAGE : SCHEM_IN_PAGE;
+                        totalPages = schemCount / SCHEM_IN_PAGE + 1;
                         
                         createSchematicPreview(&schematics[schemCount - 1], renderer); 
                         createSchematicRect(&schematics[schemCount - 1], schemCount - 1, text_offset);
                     }
-
+                    break;
                 }
-            }         
-            
+                else if(isHovered(&Cancel, mouse_x, mouse_y)) {
+                    printf("Cancel pressed\n");
+                    placing = 1;
+                    nameSchemLabel.active = 0; 
+                    break;
+                }
 
-        }
+
+                if(isTextFieldHovered(&textField, mouse_x, mouse_y)) {
+                    textField.focused = 1;
+                    strcpy(textField.text, " ");
+                }else{
+                    textField.focused = 0;
+                } 
+
+            }
+        }//end of event handling
 
         if (!placing && SDL_GetTicks() - lastUpdateTime > delay) {
             generation += logic(cells);
@@ -552,6 +639,10 @@ int main(int argc, char **argv) {
         drawButton(renderer, &generationLabel, font); 
         drawButton(renderer, &speedLabel, font);
         drawButton(renderer, &pageLabel, font);
+
+        drawOverlayedLabel(renderer, &nameSchemLabel, font);
+
+
 
         //draw schematic 
         Schematic lastAdded = schematics[schemCount - 1]; 

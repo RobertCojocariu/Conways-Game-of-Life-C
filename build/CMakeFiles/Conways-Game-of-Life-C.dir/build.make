@@ -56,7 +56,7 @@ EQUALS = =
 CMAKE_SOURCE_DIR = /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C
+CMAKE_BINARY_DIR = /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/Conways-Game-of-Life-C.dir/depend.make
@@ -73,9 +73,9 @@ CMakeFiles/Conways-Game-of-Life-C.dir/codegen:
 .PHONY : CMakeFiles/Conways-Game-of-Life-C.dir/codegen
 
 CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.o: CMakeFiles/Conways-Game-of-Life-C.dir/flags.make
-CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.o: src/main.c
+CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.o: /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/main.c
 CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.o: CMakeFiles/Conways-Game-of-Life-C.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.o -MF CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.o.d -o CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.o -c /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/main.c
 
 CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.i: cmake_force
@@ -87,9 +87,9 @@ CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.s: cmake_force
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/main.c -o CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.s
 
 CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.o: CMakeFiles/Conways-Game-of-Life-C.dir/flags.make
-CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.o: src/UI.c
+CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.o: /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/UI.c
 CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.o: CMakeFiles/Conways-Game-of-Life-C.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.o -MF CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.o.d -o CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.o -c /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/UI.c
 
 CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.i: cmake_force
@@ -101,9 +101,9 @@ CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.s: cmake_force
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/UI.c -o CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.s
 
 CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.o: CMakeFiles/Conways-Game-of-Life-C.dir/flags.make
-CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.o: src/schems.c
+CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.o: /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/schems.c
 CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.o: CMakeFiles/Conways-Game-of-Life-C.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.o -MF CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.o.d -o CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.o -c /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/schems.c
 
 CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.i: cmake_force
@@ -129,7 +129,7 @@ Conways-Game-of-Life-C: CMakeFiles/Conways-Game-of-Life-C.dir/src/schems.c.o
 Conways-Game-of-Life-C: CMakeFiles/Conways-Game-of-Life-C.dir/build.make
 Conways-Game-of-Life-C: CMakeFiles/Conways-Game-of-Life-C.dir/compiler_depend.ts
 Conways-Game-of-Life-C: CMakeFiles/Conways-Game-of-Life-C.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C executable Conways-Game-of-Life-C"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C executable Conways-Game-of-Life-C"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Conways-Game-of-Life-C.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -141,6 +141,6 @@ CMakeFiles/Conways-Game-of-Life-C.dir/clean:
 .PHONY : CMakeFiles/Conways-Game-of-Life-C.dir/clean
 
 CMakeFiles/Conways-Game-of-Life-C.dir/depend:
-	cd /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/CMakeFiles/Conways-Game-of-Life-C.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/build /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/build /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/build/CMakeFiles/Conways-Game-of-Life-C.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/Conways-Game-of-Life-C.dir/depend
 

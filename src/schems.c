@@ -1,6 +1,76 @@
 #include "../include/schems.h"
 #include "../include/constants.h"
 #include <stdio.h>
+int isSchemHovered(Schematic * schematic, int x, int y) {
+    return x >= schematic->rect.x && x <= schematic->rect.x + schematic->rect.w && y >= schematic->rect.y && y <= schematic->rect.y + schematic->rect.h;
+}
+void drawSchematic(SDL_Renderer* renderer, Schematic* schematic, TTF_Font* font) {
+    // Set fixed size for the schematic card
+    schematic->rect.w = 150;
+    schematic->rect.h = 100;
+
+    // Background color for the card
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderFillRect(renderer, &schematic->rect);
+
+    // Padding for preview area
+    int padding = 10;
+    SDL_Rect previewRect;
+    previewRect.x = schematic->rect.x + padding;
+    previewRect.y = schematic->rect.y + padding;
+
+    // Aspect-ratio calculations
+    int max_preview_width = schematic->rect.w - 2 * padding;
+    int max_preview_height = (schematic->rect.h / 2) - padding;
+    int original_width, original_height;
+    SDL_QueryTexture(schematic->preview, NULL, NULL, &original_width, &original_height);
+
+    float aspect_ratio = (float)original_width / original_height;
+    if (aspect_ratio > 1.5) {
+        // Image is wider, scale based on width
+        previewRect.w = max_preview_width;
+        previewRect.h = max_preview_width / aspect_ratio;
+    } else {
+        // Image is taller, scale based on height
+        previewRect.h = max_preview_height;
+        previewRect.w = max_preview_height * aspect_ratio;
+    }
+
+    // Center preview within the top half of the card
+    previewRect.x = schematic->rect.x + (schematic->rect.w - previewRect.w) / 2;
+    previewRect.y = schematic->rect.y + padding;
+
+    // Render the preview image
+    SDL_RenderCopy(renderer, schematic->preview, NULL, &previewRect);
+
+    // Draw the border around the schematic card
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderDrawRect(renderer, &schematic->rect);
+
+    // Render the name centered in the bottom half
+    int text_width, text_height;
+    TTF_SizeText(font, schematic->name, &text_width, &text_height);
+    SDL_Rect nameRect = {
+        schematic->rect.x + (schematic->rect.w - text_width) / 2,
+        schematic->rect.y + schematic->rect.h - padding - text_height,
+        text_width,
+        text_height
+    };
+
+    // Render the name
+    SDL_Color white = {255, 255, 255, 255};
+    if(strlen(schematic->name) > 17) {
+        schematic->name[17] = '\0';
+        schematic->name[16] = '.'; 
+        schematic->name[15] = '.'; 
+        schematic->name[14] = '.';
+    }
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, schematic->name, white);
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    SDL_FreeSurface(textSurface);
+    SDL_RenderCopy(renderer, textTexture, NULL, &nameRect);
+    SDL_DestroyTexture(textTexture);
+}
 
 char **get_txt_files(const char *directory_path, int *count) {
     int capacity = 10;   // Initial capacity for the filenames array
@@ -152,32 +222,30 @@ int loadSchematic(Schematic* schematic, TTF_Font* font, SDL_Renderer* renderer) 
 }
 
 
-int saveSchematic(void *sCells, int sW, int sH, Schematic *schematics, int *schemCount, SDL_Renderer *renderer, TTF_Font *font, int index, int textOffset)  {
-    if(sW <= 0 || sH <= 0) {
-        printf("Error: Schematic dimensions are invalid\n");
-        return 0;
-    } 
-    if(*schemCount >= MAX_SCHEMATICS) {
-        printf("Error: Maximum number of schematics reached\n");
-        return 0;
-    }
-  
-    // cast the void pointer to a 2D array 
-    int (*intCells)[sW] = (int (*)[sW]) sCells; 
-    
-    // allocate memory & duplicate the matrix
+int saveSchematic(int **sCells, int sW, int sH, Schematic *schematics, int *schemCount, SDL_Renderer *renderer, TTF_Font *font, int index, int textOffset, OverlayedLabel *label) { 
+
     int **cells = malloc(sH * sizeof(int *));
+
     for (int i = 0; i < sH; i++) {
         cells[i] = malloc(sW * sizeof(int));
+    }
+
+    // Copy cells from sCells to sCells 
+    for (int i = 0; i < sH; i++) {
         for (int j = 0; j < sW; j++) {
-            cells[i][j] = intCells[i][j]; 
+            cells[i][j] = sCells[i][j];
         }
-    }    
+    }
+
 
     // Prompt for and allocate schematic name
     char nameInput[50];
     printf("Enter schematic name: "); 
-    scanf("%49s", nameInput); 
+
+    //read the name from the text field 
+
+    strcpy(nameInput, label->txt->text);
+    printf("Name: %s\n", nameInput);
 
     Schematic newSchematic;
     newSchematic.name = malloc(strlen(nameInput) + 1);
@@ -278,4 +346,5 @@ void createSchematicPreview(Schematic *schematic, SDL_Renderer *renderer) {
     }
     SDL_FreeSurface(surface);
 }
+
 

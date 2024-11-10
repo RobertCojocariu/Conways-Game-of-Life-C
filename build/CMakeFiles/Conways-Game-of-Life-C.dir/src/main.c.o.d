@@ -1,40 +1,40 @@
-CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.o: \
- /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/UI.c \
- /usr/include/stdc-predef.h \
- /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/constants.h \
- /usr/include/SDL2/SDL_events.h /usr/include/SDL2/SDL_stdinc.h \
- /usr/include/SDL2/SDL_config.h /usr/include/SDL2/SDL_platform.h \
- /usr/include/SDL2/begin_code.h /usr/include/SDL2/close_code.h \
- /usr/include/sys/types.h /usr/include/features.h \
+CMakeFiles/Conways-Game-of-Life-C.dir/src/main.c.o: \
+ /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/main.c \
+ /usr/include/stdc-predef.h /usr/include/stdio.h \
+ /usr/include/bits/libc-header-start.h /usr/include/features.h \
  /usr/include/features-time64.h /usr/include/bits/wordsize.h \
  /usr/include/bits/timesize.h /usr/include/sys/cdefs.h \
  /usr/include/bits/long-double.h /usr/include/gnu/stubs.h \
- /usr/include/gnu/stubs-64.h /usr/include/bits/types.h \
- /usr/include/bits/typesizes.h /usr/include/bits/time64.h \
- /usr/include/bits/types/clock_t.h /usr/include/bits/types/clockid_t.h \
- /usr/include/bits/types/time_t.h /usr/include/bits/types/timer_t.h \
+ /usr/include/gnu/stubs-64.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/stddef.h \
- /usr/include/bits/stdint-intn.h /usr/include/endian.h \
- /usr/include/bits/endian.h /usr/include/bits/endianness.h \
- /usr/include/bits/byteswap.h /usr/include/bits/uintn-identity.h \
- /usr/include/sys/select.h /usr/include/bits/select.h \
- /usr/include/bits/types/sigset_t.h /usr/include/bits/types/__sigset_t.h \
- /usr/include/bits/types/struct_timeval.h \
- /usr/include/bits/types/struct_timespec.h \
- /usr/include/bits/pthreadtypes.h /usr/include/bits/thread-shared-types.h \
- /usr/include/bits/pthreadtypes-arch.h \
- /usr/include/bits/atomic_wide_counter.h /usr/include/bits/struct_mutex.h \
- /usr/include/bits/struct_rwlock.h /usr/include/stdio.h \
- /usr/include/bits/libc-header-start.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/stdarg.h \
- /usr/include/bits/types/__fpos_t.h /usr/include/bits/types/__mbstate_t.h \
+ /usr/include/bits/types.h /usr/include/bits/typesizes.h \
+ /usr/include/bits/time64.h /usr/include/bits/types/__fpos_t.h \
+ /usr/include/bits/types/__mbstate_t.h \
  /usr/include/bits/types/__fpos64_t.h /usr/include/bits/types/__FILE.h \
  /usr/include/bits/types/FILE.h /usr/include/bits/types/struct_FILE.h \
  /usr/include/bits/types/cookie_io_functions_t.h \
  /usr/include/bits/stdio_lim.h /usr/include/bits/floatn.h \
  /usr/include/bits/floatn-common.h /usr/include/stdlib.h \
  /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
- /usr/include/alloca.h /usr/include/bits/stdlib-float.h \
+ /usr/include/sys/types.h /usr/include/bits/types/clock_t.h \
+ /usr/include/bits/types/clockid_t.h /usr/include/bits/types/time_t.h \
+ /usr/include/bits/types/timer_t.h /usr/include/bits/stdint-intn.h \
+ /usr/include/endian.h /usr/include/bits/endian.h \
+ /usr/include/bits/endianness.h /usr/include/bits/byteswap.h \
+ /usr/include/bits/uintn-identity.h /usr/include/sys/select.h \
+ /usr/include/bits/select.h /usr/include/bits/types/sigset_t.h \
+ /usr/include/bits/types/__sigset_t.h \
+ /usr/include/bits/types/struct_timeval.h \
+ /usr/include/bits/types/struct_timespec.h \
+ /usr/include/bits/pthreadtypes.h /usr/include/bits/thread-shared-types.h \
+ /usr/include/bits/pthreadtypes-arch.h \
+ /usr/include/bits/atomic_wide_counter.h /usr/include/bits/struct_mutex.h \
+ /usr/include/bits/struct_rwlock.h /usr/include/alloca.h \
+ /usr/include/bits/stdlib-float.h /usr/include/SDL2/SDL.h \
+ /usr/include/SDL2/SDL_main.h /usr/include/SDL2/SDL_stdinc.h \
+ /usr/include/SDL2/SDL_config.h /usr/include/SDL2/SDL_platform.h \
+ /usr/include/SDL2/begin_code.h /usr/include/SDL2/close_code.h \
  /usr/include/string.h /usr/include/bits/types/locale_t.h \
  /usr/include/bits/types/__locale_t.h /usr/include/strings.h \
  /usr/include/wchar.h /usr/include/bits/wchar.h \
@@ -50,19 +50,10 @@ CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.o: \
  /usr/include/bits/mathcalls-helper-functions.h \
  /usr/include/bits/mathcalls.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/float.h \
- /usr/include/SDL2/SDL_error.h /usr/include/SDL2/SDL_video.h \
- /usr/include/SDL2/SDL_pixels.h /usr/include/SDL2/SDL_endian.h \
- /usr/include/SDL2/SDL_rect.h /usr/include/SDL2/SDL_rwops.h \
- /usr/include/SDL2/SDL_surface.h /usr/include/SDL2/SDL_blendmode.h \
- /usr/include/SDL2/SDL_keyboard.h /usr/include/SDL2/SDL_keycode.h \
- /usr/include/SDL2/SDL_scancode.h /usr/include/SDL2/SDL_mouse.h \
- /usr/include/SDL2/SDL_joystick.h /usr/include/SDL2/SDL_guid.h \
- /usr/include/SDL2/SDL_mutex.h /usr/include/SDL2/SDL_gamecontroller.h \
- /usr/include/SDL2/SDL_sensor.h /usr/include/SDL2/SDL_quit.h \
- /usr/include/SDL2/SDL_gesture.h /usr/include/SDL2/SDL_touch.h \
- /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_main.h \
  /usr/include/SDL2/SDL_assert.h /usr/include/SDL2/SDL_atomic.h \
- /usr/include/SDL2/SDL_audio.h /usr/include/SDL2/SDL_thread.h \
+ /usr/include/SDL2/SDL_audio.h /usr/include/SDL2/SDL_error.h \
+ /usr/include/SDL2/SDL_endian.h /usr/include/SDL2/SDL_mutex.h \
+ /usr/include/SDL2/SDL_thread.h /usr/include/SDL2/SDL_rwops.h \
  /usr/include/SDL2/SDL_clipboard.h /usr/include/SDL2/SDL_cpuinfo.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/immintrin.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/x86gprintrin.h \
@@ -164,7 +155,15 @@ CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.o: \
  /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/prfchwintrin.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/keylockerintrin.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/amxfp16intrin.h \
- /usr/include/SDL2/SDL_events.h /usr/include/SDL2/SDL_filesystem.h \
+ /usr/include/SDL2/SDL_events.h /usr/include/SDL2/SDL_video.h \
+ /usr/include/SDL2/SDL_pixels.h /usr/include/SDL2/SDL_rect.h \
+ /usr/include/SDL2/SDL_surface.h /usr/include/SDL2/SDL_blendmode.h \
+ /usr/include/SDL2/SDL_keyboard.h /usr/include/SDL2/SDL_keycode.h \
+ /usr/include/SDL2/SDL_scancode.h /usr/include/SDL2/SDL_mouse.h \
+ /usr/include/SDL2/SDL_joystick.h /usr/include/SDL2/SDL_guid.h \
+ /usr/include/SDL2/SDL_gamecontroller.h /usr/include/SDL2/SDL_sensor.h \
+ /usr/include/SDL2/SDL_quit.h /usr/include/SDL2/SDL_gesture.h \
+ /usr/include/SDL2/SDL_touch.h /usr/include/SDL2/SDL_filesystem.h \
  /usr/include/SDL2/SDL_haptic.h /usr/include/SDL2/SDL_hidapi.h \
  /usr/include/SDL2/SDL_hints.h /usr/include/SDL2/SDL_loadso.h \
  /usr/include/SDL2/SDL_log.h /usr/include/SDL2/SDL_messagebox.h \
@@ -174,13 +173,16 @@ CMakeFiles/Conways-Game-of-Life-C.dir/src/UI.c.o: \
  /usr/include/SDL2/SDL_version.h /usr/include/SDL2/SDL_locale.h \
  /usr/include/SDL2/SDL_misc.h /usr/include/SDL2/SDL_image.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_ttf.h \
- /usr/include/SDL2/SDL_render.h \
+ /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/constants.h \
+ /usr/include/SDL2/SDL_events.h \
  /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/UI.h \
  /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/constants.h \
+ /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/buttons.h \
  /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/buttons.h \
  /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/schems.h \
  /usr/include/dirent.h /usr/include/bits/dirent.h \
  /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h \
  /usr/include/linux/limits.h \
  /usr/include/bits/pthread_stack_min-dynamic.h \
- /usr/include/bits/pthread_stack_min.h /usr/include/bits/dirent_ext.h
+ /usr/include/bits/pthread_stack_min.h /usr/include/bits/dirent_ext.h \
+ /home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/src/../include/UI.h

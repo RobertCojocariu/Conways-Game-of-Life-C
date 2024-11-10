@@ -7,10 +7,10 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
+  "/home/robert/Documents/C/game_of_life/Conways-Game-of-Life-C/CMakeLists.txt"
   "CMakeFiles/3.31.0/CMakeCCompiler.cmake"
   "CMakeFiles/3.31.0/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.31.0/CMakeSystem.cmake"
-  "CMakeLists.txt"
   "/usr/lib/cmake/SDL2/SDL2Config.cmake"
   "/usr/lib/cmake/SDL2/SDL2ConfigVersion.cmake"
   "/usr/lib/cmake/SDL2/SDL2Targets-noconfig.cmake"
@@ -53,6 +53,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/share/cmake/Modules/CMakeTestCCompiler.cmake"
   "/usr/share/cmake/Modules/CMakeTestCXXCompiler.cmake"
   "/usr/share/cmake/Modules/CMakeTestCompilerCommon.cmake"
+  "/usr/share/cmake/Modules/CMakeUnixFindMake.cmake"
   "/usr/share/cmake/Modules/Compiler/ADSP-DetermineCompiler.cmake"
   "/usr/share/cmake/Modules/Compiler/ARMCC-DetermineCompiler.cmake"
   "/usr/share/cmake/Modules/Compiler/ARMClang-DetermineCompiler.cmake"

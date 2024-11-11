@@ -15,19 +15,15 @@ This is a GUI representation of Conway's game of life made in C with the SDL2 li
    cd Conways-Game-of-Life-C
    ```
 
-2. Create and enter the `build` directory:
-   ```bash
-   mkdir build
-   cd build
-   ```
 
-3. Run CMake and `make`:
+2. Run CMake and `make`:
    ```bash
+   cd build
    cmake ..
    make
    ```
 
-4. Run the program:
+3. Run the program:
    ```bash
    ./Conways-Game-of-Life-C
    ```

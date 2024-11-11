@@ -11,7 +11,7 @@ This is a GUI representation of Conway's game of life made in C with the SDL2 li
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/RobertCojocariu/Conways-Game-of-Life-C.git
    cd Conways-Game-of-Life-C
    ```
 

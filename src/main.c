@@ -195,6 +195,14 @@ int main(int argc, char **argv) {
         NULL
     };
 
+    Button tutorialButton = {
+        (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE -190, height + 80, 190, 50},
+        (SDL_Color) {0,0, 0, 255},
+        (SDL_Color) {255,255,255, 255},
+        "?",
+        NULL
+    };
+
     SDL_Rect schematicBackground = {
         text_offset - 15,
         GRID_MARGIN_Y,
@@ -237,15 +245,31 @@ int main(int argc, char **argv) {
 
     OverlayedLabel nameSchemLabel = {
         0,
-        //big laben in the middle of the screen 
         (SDL_Rect) {windowWidth / 2 - 150, windowHeight / 2 - 200, 400, 200}, 
-        (SDL_Color) {255,0, 0, 255},
+        (SDL_Color) {22,24, 28, 255},
         "Enter name",
         &textField,
         &Ok,
         &Cancel,
     };
+    Button tutorialOk = {
+        (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40, GRID_MARGIN_Y + 500, 100, 50},
+        (SDL_Color) {0,0, 0, 255},
+        (SDL_Color) {255,255,255, 255},
+        "ok",
+        NULL
+    };
 
+
+    OverlayedLabel tutorialLabel = {
+        1,
+        (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE / 2 - 400, GRID_MARGIN_Y + GRID_HEIGHT * GRID_SIZE / 2 - 200, 800, 400},
+        (SDL_Color) {22,24, 28, 255},
+        "Welcome to Conway's Game of Life\n\n",
+        NULL,
+        &tutorialOk,
+        NULL,
+    };
     ///// schematics 
     
     //load the schematics 
@@ -351,12 +375,11 @@ int main(int argc, char **argv) {
             
             SDL_GetMouseState(&mouse_x, &mouse_y);
 
-            
 
             if (((event.type == SDL_MOUSEBUTTONDOWN) && placing==1) || (event.type == SDL_MOUSEMOTION && placing==1 && mouseDown)) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                if(x >= GRID_MARGIN_X && x < GRID_MARGIN_X + GRID_WIDTH * grid_size && y >= GRID_MARGIN_Y && y < GRID_MARGIN_Y + GRID_HEIGHT * grid_size && !nameSchemLabel.active) { //in bound
+                if(x >= GRID_MARGIN_X && x < GRID_MARGIN_X + GRID_WIDTH * grid_size && y >= GRID_MARGIN_Y && y < GRID_MARGIN_Y + GRID_HEIGHT * grid_size && !nameSchemLabel.active && !tutorialLabel.active) { //in bound
                     int rx = (x - GRID_MARGIN_X) / grid_size;
                     int ry = (y - GRID_MARGIN_Y) / grid_size;
 
@@ -372,7 +395,7 @@ int main(int argc, char **argv) {
             if (event.type == SDL_MOUSEBUTTONUP) {
                 mouseDown = 0;
             }
-            if (event.type == SDL_KEYDOWN && !nameSchemLabel.active) {
+            if (event.type == SDL_KEYDOWN && !nameSchemLabel.active && !tutorialLabel.active) {
                 switch (event.key.keysym.sym) {
                     case SDLK_SPACE:
                         placing = !placing;
@@ -392,7 +415,7 @@ int main(int argc, char **argv) {
                 }
             }
 
-            if(event.type == SDL_MOUSEBUTTONDOWN && !nameSchemLabel.active) {
+            if(event.type == SDL_MOUSEBUTTONDOWN && !nameSchemLabel.active && !tutorialLabel.active) {
                 if(isHovered(&play, mouse_x, mouse_y)) {
                     placing = !placing;
 
@@ -430,6 +453,11 @@ int main(int argc, char **argv) {
                 else if(isHovered(&selectionMode, mouse_x, mouse_y)) {
                     placing = 3;
                 }
+                else if(isHovered(&tutorialButton, mouse_x, mouse_y)) {
+                    tutorialLabel.active = 1;
+                    placing = 0;
+                }
+
 
 
                 for(int i = 0; i < schemCountModulated; i++) {
@@ -583,9 +611,15 @@ int main(int argc, char **argv) {
                 } 
 
             }
+            if(event.type == SDL_MOUSEBUTTONDOWN && tutorialLabel.active) {
+                if(isHovered(&tutorialOk, mouse_x, mouse_y)) {
+                    tutorialLabel.active = 0;
+                    placing = 1;
+                }
+            }
         }//end of event handling
 
-        if (!placing && SDL_GetTicks() - lastUpdateTime > delay) {
+        if (!placing && SDL_GetTicks() - lastUpdateTime > delay && !nameSchemLabel.active && !tutorialLabel.active) {
             generation += logic(cells);
             lastUpdateTime = SDL_GetTicks();
         }
@@ -634,13 +668,17 @@ int main(int argc, char **argv) {
         drawButton(renderer, &nextPage, font);
         drawButton(renderer, &prevPage, font);
         drawButton(renderer, &selectionMode, font);
+        drawButton(renderer, &tutorialButton, font);
         //fake labels
         drawButton(renderer, &statusLabel, font);
         drawButton(renderer, &generationLabel, font); 
         drawButton(renderer, &speedLabel, font);
         drawButton(renderer, &pageLabel, font);
-
+    
+        // overlayed labels
         drawOverlayedLabel(renderer, &nameSchemLabel, font);
+        drawOverlayedLabel(renderer, &tutorialLabel, font);
+        drawTutorial(renderer, &tutorialLabel, schemFont);
 
 
 
@@ -658,7 +696,7 @@ int main(int argc, char **argv) {
             placeSchematic(renderer, &schematics[indexOfSchemPressed], mouse_x, mouse_y, placing);
         }
         if (selecting) {
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 128); // Semi-transparent white
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 128); 
             SDL_Rect selectionRect = {
                 .x = GRID_MARGIN_X + selection_start_x * grid_size,
                 .y = GRID_MARGIN_Y + selection_start_y * grid_size,

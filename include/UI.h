@@ -38,6 +38,7 @@ int isTextFieldHovered(TextField *txt, int x, int y);
 void drawTextField(TextField *txt, SDL_Renderer * renderer, TTF_Font * font);
 void drawOverlayedLabel(SDL_Renderer * renderer, OverlayedLabel * label, TTF_Font * font);
 void handleTextField(TextField *textField, SDL_Event *event, Uint32 repeatDelay, Uint32 lastKeyPressTime);
+void drawTutorial(SDL_Renderer * renderer, OverlayedLabel * lbl, TTF_Font * font);
 #endif // !UI_H
 
 

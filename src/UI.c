@@ -110,11 +110,18 @@ void drawOverlayedLabel(SDL_Renderer * renderer, OverlayedLabel * label, TTF_Fon
         drawTextField(label->txt, renderer, font);
     }
     if(label->btn1) {
+        if(label->txt == NULL && label->btn2 == NULL) {
+            //move button to the middle 
+            label->btn1->rect.x = label->rect.x + label->rect.w / 2 - label->btn1->rect.w / 2;
+            label->btn1->rect.y = label->rect.y + label->rect.h - 60;
+        }
+        else {
         //move button to the bottom left 
         label->btn1->rect.x = label->rect.x + 10;
         label->btn1->rect.y = label->rect.y + label->rect.h - 60;
-
+        }
         drawButton(renderer, label->btn1, font);
+        
     }
     if(label->btn2) {
         //move button to the bottom right 
@@ -185,3 +192,15 @@ void handleTextField(TextField *textField, SDL_Event *event, Uint32 repeatDelay,
     }
 }
 
+void drawTutorial(SDL_Renderer * renderer, OverlayedLabel *lbl, TTF_Font * font) { 
+    if(lbl->active == 0) {
+        return;
+    }
+    renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 80, "1. Left click on the grid to place cells");
+    renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 110, "2. Right click on the grid to remove cells");
+    renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 140, "3. SPACE or buttons to start/stop simulation");
+    renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 170, "4. A / D or buttons to change the speed");
+    renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 200, "5. Click on a schematic to select it");
+    renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 230, "6. Use the ~ button to enter schematic selection mode");
+    renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 260, "7. Use the ? button to open this menu");
+}

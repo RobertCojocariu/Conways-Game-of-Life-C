@@ -1,22 +1,34 @@
 # Conways Game of Life, made in C
 This is a GUI representation of Conway's game of life made in C with the SDL2 library
 
-## Description
+## Building and Running Conway's Game of Life
 
-By selecting the grid cells with the mouse you can spawn live cells, to remove them use RMB.\
-To start or pause the simulation use the SPACEBAR.\
-By using A and D you can change the speed.
+### Prerequisites
 
+- Ensure you have `SDL2`, `SDL2_image`, and `SDL2_ttf` libraries installed on your system.
 
-You can also use Q to quit the program.
+### Build Instructions
 
-## Compilation
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd Conways-Game-of-Life-C
+   ```
 
-To install the library you can follow SDL's [wiki](https://wiki.libsdl.org/SDL2/Installation).
+2. Create and enter the `build` directory:
+   ```bash
+   mkdir build
+   cd build
+   ```
 
-To compile and run the program using make
+3. Run CMake and `make`:
+   ```bash
+   cmake ..
+   make
+   ```
 
-```bash
-make && ./Conways-Game-of-Life-C 
-```
+4. Run the program:
+   ```bash
+   ./Conways-Game-of-Life-C
+   ```
 

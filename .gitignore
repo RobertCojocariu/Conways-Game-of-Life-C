@@ -1,0 +1,11 @@
+
+# Ignore build artifacts
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/Makefile
+/Conways-Game-of-Life-C
+
+# Ignore macOS files
+.DS_Store

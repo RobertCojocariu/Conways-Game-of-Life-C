@@ -6,6 +6,7 @@ This is a GUI representation of Conway's game of life made in C with the SDL2 li
 ### Prerequisites
 
 - Ensure you have `SDL2`, `SDL2_image`, and `SDL2_ttf` libraries installed on your system.
+- You can check how from SDL2's [wiki](https://wiki.libsdl.org/SDL2/Installation).
 
 ### Build Instructions
 
@@ -16,15 +17,9 @@ This is a GUI representation of Conway's game of life made in C with the SDL2 li
    ```
 
 
-2. Run CMake and `make`:
+2. Run `make` and start the executable:
    ```bash
-   cd build
-   cmake ..
-   make
-   ```
-
-3. Run the program:
-   ```bash
-   ./Conways-Game-of-Life-C
+   make && ./Conways-Game-of-Life-C
+   
    ```
 

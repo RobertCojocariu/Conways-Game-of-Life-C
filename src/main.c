@@ -1,5 +1,6 @@
 
 
+#include <SDL2/SDL_video.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
@@ -38,6 +39,12 @@ int logic(int grid[GRID_WIDTH][GRID_HEIGHT]) {
     int newGrid[GRID_WIDTH][GRID_HEIGHT] = {0};
     int moved = 0;
 
+    // RULES : 
+    // 1. Any live cell with fewer than two live neighbours dies, as if by underpopulation. 
+    // 2. Any live cell with two or three live neighbours lives on to the next generation.
+    // 3. Any live cell with more than three live neighbours dies, as if by overpopulation.
+    // 4. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+
     for (int i = 0; i < GRID_WIDTH; i++) {
         for (int j = 0; j < GRID_HEIGHT; j++) {
             int neighbors = countNeighbours(i, j, grid);
@@ -65,15 +72,28 @@ int logic(int grid[GRID_WIDTH][GRID_HEIGHT]) {
 
 
 int main(int argc, char **argv) {
-    // Initialize SDL
+    // BOILERPLATE ////////////////////////////////////////////////////////
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return 1;
     }
 
-    // Create SDL window and renderer
-    //make fullscreen 
-    SDL_Window *window = SDL_CreateWindow("Game of Life", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    SDL_DisplayMode display_mode; 
+    if(SDL_GetCurrentDisplayMode(0, &display_mode) != 0) {
+        printf("Error getting display mode\n");
+        return 1;
+    }
+
+    int screen_width = display_mode.w; 
+    int screen_height = display_mode.h;
+
+
+    SDL_Window *window = SDL_CreateWindow("Game of Life",
+                                          SDL_WINDOWPOS_UNDEFINED,
+                                          SDL_WINDOWPOS_UNDEFINED,
+                                          screen_width, 
+                                          screen_height,
+                                          SDL_WINDOW_SHOWN);
     if (!window) {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
         SDL_Quit();
@@ -114,7 +134,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-
+    //////////////////////////////////////////////////////////////////////// 
 
 
     int cells[GRID_WIDTH][GRID_HEIGHT] = {0};
@@ -138,7 +158,7 @@ int main(int argc, char **argv) {
     int text_offset = GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40;
     int page = 1;
 
-    //Initialize buttons 
+    //initialize buttons 
     Button play = {
         (SDL_Rect) {GRID_MARGIN_X+50+20 , height + 20 , 50, 50},
         (SDL_Color) {0,0, 0, 255},
@@ -287,7 +307,6 @@ int main(int argc, char **argv) {
        
     Schematic schematics[MAX_SCHEMATICS];
 
-    //concatenate path to ./schematics/ 
     char path[] = "./schematics/"; 
     
     for(int i = 0; i < schemCount; i++) {
@@ -324,7 +343,6 @@ int main(int argc, char **argv) {
     //////
     
     char pageLabelString[10];
-    // 1 / 2 
     sprintf(pageLabelString, "%d / %d", page, totalPages);
 
 
@@ -336,7 +354,6 @@ int main(int argc, char **argv) {
         NULL
     };
     Button prevPage = {
-        //draw it 10 px before the page label 
         (SDL_Rect) {pageLabel.rect.x - 60, pageLabel.rect.y, 50, 50},
         (SDL_Color) {0,0, 0, 255},
         (SDL_Color) {255,255,255, 255},
@@ -345,7 +362,6 @@ int main(int argc, char **argv) {
     };
 
     Button nextPage = {
-        //draw it 10 px after the page label 
         (SDL_Rect) {pageLabel.rect.x + pageLabel.rect.w + 10, pageLabel.rect.y, 50, 50},
         (SDL_Color) {0,0, 0, 255},
         (SDL_Color) {255,255,255, 255},
@@ -359,9 +375,9 @@ int main(int argc, char **argv) {
     int selecting = 0;
     int selection_start_x, selection_start_y;
     int selection_end_x, selection_end_y;
-    Uint32 lastKeyPressTime = 0; // Track the last key press time
-    const Uint32 initialDelay = 200; // Initial delay before repeating (ms)
-    const Uint32 repeatDelay = 50; // Delay between repeats (ms)
+    Uint32 lastKeyPressTime = 0; 
+    const Uint32 initialDelay = 200;
+    const Uint32 repeatDelay = 50; 
 
     int selectionW, selectionH;
     int **scCells;
@@ -500,7 +516,6 @@ int main(int argc, char **argv) {
             }
 
 
-            // Handle key presses
                 
             if (placing == 3) { //selection mode
                 if (event.button.button == SDL_BUTTON_RIGHT) {
@@ -618,7 +633,8 @@ int main(int argc, char **argv) {
                 }
             }
         }//end of event handling
-
+        
+        // logic 
         if (!placing && SDL_GetTicks() - lastUpdateTime > delay && !nameSchemLabel.active && !tutorialLabel.active) {
             generation += logic(cells);
             lastUpdateTime = SDL_GetTicks();
@@ -632,6 +648,7 @@ int main(int argc, char **argv) {
             play.texture = IMG_LoadTexture(renderer, "./assets/pause.png");
             statusLabel.text = "Running...";
         }
+
 
         // Rendering
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);

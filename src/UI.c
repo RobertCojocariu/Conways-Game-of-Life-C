@@ -20,7 +20,6 @@ void renderString(SDL_Renderer * renderer, TTF_Font *font, int x, int y, const c
 
 void drawGrid(SDL_Renderer * renderer) {
     SDL_SetRenderDrawColor(renderer, 255 / 5, 255 / 5, 255 / 5, 100);
-    //draw grid_width by grid_height grid 
     for (int i = 0; i < GRID_WIDTH; ++i) {
         SDL_RenderDrawLine(renderer, GRID_MARGIN_X + i * GRID_SIZE, GRID_MARGIN_Y, GRID_MARGIN_X + i * GRID_SIZE, GRID_MARGIN_Y + GRID_HEIGHT * GRID_SIZE);
     }
@@ -28,7 +27,6 @@ void drawGrid(SDL_Renderer * renderer) {
         SDL_RenderDrawLine(renderer, GRID_MARGIN_X, GRID_MARGIN_Y + i * GRID_SIZE, GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE, GRID_MARGIN_Y + i * GRID_SIZE);
     }
 
-    // Draw border 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderDrawRect( renderer, &(SDL_Rect){GRID_MARGIN_X, GRID_MARGIN_Y, GRID_WIDTH * GRID_SIZE, GRID_HEIGHT * GRID_SIZE});
 }
@@ -50,14 +48,12 @@ void drawButton(SDL_Renderer * renderer, Button * button, TTF_Font * font) {
     SDL_SetRenderDrawColor(renderer, button->borderColor.r, button->borderColor.g, button->borderColor.b, button->borderColor.a); 
     SDL_RenderDrawRect(renderer, &button->rect);
     if(button->texture) {
-        //draw it in the middle slighlty smaller than the button         
         SDL_Rect rect = {button->rect.x + button->rect.w / 2 - button->rect.w / 4, button->rect.y + button->rect.h / 2 - button->rect.h / 4, button->rect.w / 2, button->rect.h / 2};
         SDL_RenderCopy(renderer, button->texture, NULL, &rect);
 
     }
 
-    else {
-        //draw it in the center 
+    else { // render text if no texture
         int text_width, text_height; 
         TTF_SizeText(font, button->text, &text_width, &text_height);
         renderString(renderer, font, button->rect.x + button->rect.w / 2 - text_width / 2, button->rect.y + button->rect.h / 2 - text_height / 2, button->text);
@@ -110,7 +106,7 @@ void drawOverlayedLabel(SDL_Renderer * renderer, OverlayedLabel * label, TTF_Fon
         drawTextField(label->txt, renderer, font);
     }
     if(label->btn1) {
-        if(label->txt == NULL && label->btn2 == NULL) {
+        if(label->txt == NULL && label->btn2 == NULL) { // if there is only one button
             //move button to the middle 
             label->btn1->rect.x = label->rect.x + label->rect.w / 2 - label->btn1->rect.w / 2;
             label->btn1->rect.y = label->rect.y + label->rect.h - 60;
@@ -144,41 +140,38 @@ void drawOverlayedLabel(SDL_Renderer * renderer, OverlayedLabel * label, TTF_Fon
 void handleTextField(TextField *textField, SDL_Event *event, Uint32 repeatDelay, Uint32 lastKeyPressTime) {
     if (textField->focused) {
 
-        // Handle text input with delay for held keys
         if (event->type == SDL_KEYDOWN) {
             Uint32 currentTime = SDL_GetTicks();
-            char add = '\0'; // Default empty char
+            char add = '\0';
 
-            // Process backspace
-            if (event->key.keysym.sym == SDLK_BACKSPACE) {
+            if (event->key.keysym.sym == SDLK_BACKSPACE) { // delete key
                 if (strlen(textField->text) > 1) {
                     textField->text[strlen(textField->text) - 1] = '\0';
                 }
-                lastKeyPressTime = currentTime; // Reset the timer for backspace
+                lastKeyPressTime = currentTime; 
             } else {
-                // If it's a new key press or we meet the repeat delay
                 if (currentTime - lastKeyPressTime >= repeatDelay || lastKeyPressTime == 0) {
-                    lastKeyPressTime = currentTime; // Update last key press time
+                    lastKeyPressTime = currentTime; 
 
-                    // Handle alphanumeric and space characters
+                    // alphanumeric input
                     SDL_Keycode key = event->key.keysym.sym;
                     if ((key >= SDLK_a && key <= SDLK_z) || (key >= SDLK_0 && key <= SDLK_9) || key == SDLK_SPACE) {
                         if (key == SDLK_SPACE) {
                             add = ' ';
                         } else if (key >= SDLK_a && key <= SDLK_z) {
-                            add = 'a' + (key - SDLK_a); // Maps SDLK_a to 'a', SDLK_b to 'b', etc.
+                            add = 'a' + (key - SDLK_a); // maps SDLK_a to 'a', SDLK_b to 'b', ... 
                         } else if (key >= SDLK_0 && key <= SDLK_9) {
-                            add = '0' + (key - SDLK_0); // Maps SDLK_0 to '0', SDLK_1 to '1', etc.
+                            add = '0' + (key - SDLK_0); // maps SDLK_0 to '0', SDLK_1 to '1', ...
                         }
 
-                    }else switch (key) {
-                        case SDLK_MINUS: add = '-'; break;
+                    }else switch (key) { //other keys
+                        case SDLK_MINUS: add = '-'; break; 
                         case SDLK_UNDERSCORE: add = '_'; break;
                         case SDLK_PERIOD: add = '.'; break;
                     }
                     
 
-                    // Add char to field if valid
+                    
                     int len = strlen(textField->text);
                     if (add != '\0' && len < sizeof(textField->text) - 1) {
                         textField->text[len] = add;
@@ -187,7 +180,7 @@ void handleTextField(TextField *textField, SDL_Event *event, Uint32 repeatDelay,
                 }
             }
         } else if (event->type == SDL_KEYUP) {
-            lastKeyPressTime = 0; // Reset the delay timer on key release
+            lastKeyPressTime = 0;
         }
     }
 }

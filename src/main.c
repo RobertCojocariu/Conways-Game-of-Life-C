@@ -134,7 +134,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    //////////////////////////////////////////////////////////////////////// 
+    //// END BOILERPLATE ////////////////////////////////////////////////////////////////////  
 
 
     int cells[GRID_WIDTH][GRID_HEIGHT] = {0};
@@ -290,6 +290,12 @@ int main(int argc, char **argv) {
         &tutorialOk,
         NULL,
     };
+
+    // preloading textures 
+    SDL_Texture *playTexture = IMG_LoadTexture(renderer, "./assets/play.png"); 
+    SDL_Texture *pauseTexture = IMG_LoadTexture(renderer, "./assets/pause.png");
+
+
     ///// schematics 
     
     //load the schematics 
@@ -641,11 +647,11 @@ int main(int argc, char **argv) {
         }
 
         if(placing){
-             play.texture = IMG_LoadTexture(renderer, "./assets/play.png");
+             play.texture = playTexture;
              statusLabel.text = "Placing...";
         }
         else {
-            play.texture = IMG_LoadTexture(renderer, "./assets/pause.png");
+            play.texture = pauseTexture; 
             statusLabel.text = "Running...";
         }
 
@@ -731,6 +737,12 @@ int main(int argc, char **argv) {
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    free(schemFiles);
+    for(int i = 0; i < schemCount; i++) {
+        free(schematics[i].cells);
+    } 
+    free(playTexture);
+    free(pauseTexture);
     SDL_Quit();
 
     TTF_CloseFont(font);

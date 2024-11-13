@@ -91,8 +91,8 @@ int main(int argc, char **argv) {
     SDL_Window *window = SDL_CreateWindow("Game of Life",
                                           SDL_WINDOWPOS_UNDEFINED,
                                           SDL_WINDOWPOS_UNDEFINED,
-                                          screen_width, 
-                                          screen_height,
+                                          screen_width,
+                                            screen_height,
                                           SDL_WINDOW_SHOWN);
     if (!window) {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -396,6 +396,8 @@ int main(int argc, char **argv) {
             }
             
             SDL_GetMouseState(&mouse_x, &mouse_y);
+            mouse_x = (int)(mouse_x* (float)1920 / screen_width);
+            mouse_y = (int)(mouse_y * (float)1080 / screen_height);
 
 
             if (((event.type == SDL_MOUSEBUTTONDOWN) && placing==1) || (event.type == SDL_MOUSEMOTION && placing==1 && mouseDown)) {
@@ -729,7 +731,7 @@ int main(int argc, char **argv) {
             SDL_RenderDrawRect(renderer, &selectionRect);
         }
             
-
+    SDL_RenderSetLogicalSize(renderer, 1920,1080);
         SDL_RenderPresent(renderer);
     }
 
@@ -741,8 +743,6 @@ int main(int argc, char **argv) {
     for(int i = 0; i < schemCount; i++) {
         free(schematics[i].cells);
     } 
-    free(playTexture);
-    free(pauseTexture);
     SDL_Quit();
 
     TTF_CloseFont(font);

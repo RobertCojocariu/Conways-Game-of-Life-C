@@ -664,8 +664,8 @@ int main(int argc, char **argv) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        drawGrid(renderer);
-        drawFilledCells(renderer, cells);
+        drawGrid(renderer, windowWidth, windowHeight);
+        drawFilledCells(renderer, cells, windowWidth, windowHeight);
 
         SDL_SetRenderDrawColor(renderer, 25,25,25, 100);
         SDL_RenderFillRect(renderer, &schematicBackground);

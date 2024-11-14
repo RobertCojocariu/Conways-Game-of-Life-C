@@ -18,29 +18,76 @@ void renderString(SDL_Renderer * renderer, TTF_Font *font, int x, int y, const c
     SDL_DestroyTexture(texture);
 }
 
-void drawGrid(SDL_Renderer * renderer) {
+
+void drawGrid(SDL_Renderer * renderer, int windowWidth, int windowHeight) {
+    // Calculate scaling factors
+    float scaleX = windowWidth / 1920.0f;
+    float scaleY = windowHeight / 1080.0f;
+    
+    int scaledGridSizeX = GRID_SIZE * scaleX;
+    int scaledGridSizeY = GRID_SIZE * scaleY;
+    int scaledGridMarginX = GRID_MARGIN_X * scaleX;
+    int scaledGridMarginY = GRID_MARGIN_Y * scaleY;
+    int scaledGridWidth = GRID_WIDTH * scaledGridSizeX;
+    int scaledGridHeight = GRID_HEIGHT * scaledGridSizeY;
+
     SDL_SetRenderDrawColor(renderer, 255 / 5, 255 / 5, 255 / 5, 100);
+    
+    // Draw vertical lines
     for (int i = 0; i < GRID_WIDTH; ++i) {
-        SDL_RenderDrawLine(renderer, GRID_MARGIN_X + i * GRID_SIZE, GRID_MARGIN_Y, GRID_MARGIN_X + i * GRID_SIZE, GRID_MARGIN_Y + GRID_HEIGHT * GRID_SIZE);
+        SDL_RenderDrawLine(renderer,
+            scaledGridMarginX + i * scaledGridSizeX,
+            scaledGridMarginY,
+            scaledGridMarginX + i * scaledGridSizeX,
+            scaledGridMarginY + scaledGridHeight
+        );
     }
+
+    // Draw horizontal lines
     for (int i = 0; i < GRID_HEIGHT; ++i) {
-        SDL_RenderDrawLine(renderer, GRID_MARGIN_X, GRID_MARGIN_Y + i * GRID_SIZE, GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE, GRID_MARGIN_Y + i * GRID_SIZE);
+        SDL_RenderDrawLine(renderer,
+            scaledGridMarginX,
+            scaledGridMarginY + i * scaledGridSizeY,
+            scaledGridMarginX + scaledGridWidth,
+            scaledGridMarginY + i * scaledGridSizeY
+        );
     }
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderDrawRect( renderer, &(SDL_Rect){GRID_MARGIN_X, GRID_MARGIN_Y, GRID_WIDTH * GRID_SIZE, GRID_HEIGHT * GRID_SIZE});
+    SDL_RenderDrawRect(renderer, &(SDL_Rect){
+        scaledGridMarginX,
+        scaledGridMarginY,
+        scaledGridWidth,
+        scaledGridHeight
+    });
 }
 
-void drawFilledCells(SDL_Renderer * renderer, int cells[GRID_WIDTH][GRID_HEIGHT]) {
+void drawFilledCells(SDL_Renderer * renderer, int cells[GRID_WIDTH][GRID_HEIGHT], int windowWidth, int windowHeight) {
+    // Calculate scaling factors
+    float scaleX = windowWidth / 1920.0f;
+    float scaleY = windowHeight / 1080.0f;
+
+    int scaledGridSizeX = GRID_SIZE * scaleX;
+    int scaledGridSizeY = GRID_SIZE * scaleY;
+    int scaledGridMarginX = GRID_MARGIN_X * scaleX;
+    int scaledGridMarginY = GRID_MARGIN_Y * scaleY;
+
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     for (int i = 0; i < GRID_WIDTH; ++i) {
         for (int j = 0; j < GRID_HEIGHT; ++j) {
             if (cells[i][j]) {
-                SDL_RenderFillRect(renderer, &(SDL_Rect){GRID_MARGIN_X + i * GRID_SIZE, GRID_MARGIN_Y + j * GRID_SIZE, GRID_SIZE, GRID_SIZE});
+                SDL_Rect cellRect = {
+                    scaledGridMarginX + i * scaledGridSizeX,
+                    scaledGridMarginY + j * scaledGridSizeY,
+                    scaledGridSizeX,
+                    scaledGridSizeY
+                };
+                SDL_RenderFillRect(renderer, &cellRect);
             }
         }
     }
 }
+
 
 void drawButton(SDL_Renderer * renderer, Button * button, TTF_Font * font) {
     SDL_SetRenderDrawColor(renderer, button->color.r, button->color.g, button->color.b, button->color.a);

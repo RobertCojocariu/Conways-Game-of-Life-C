@@ -25,8 +25,8 @@ typedef struct OverlayedLabel {
 
 
 void renderString(SDL_Renderer * renderer, TTF_Font *font, int x, int y, const char * text);
-void drawGrid(SDL_Renderer * renderer); 
-void drawFilledCells(SDL_Renderer *renderer, int cells[GRID_WIDTH][GRID_HEIGHT]);
+void drawGrid(SDL_Renderer * renderer, int windowWidth, int windowHeight);
+void drawFilledCells(SDL_Renderer * renderer, int cells[GRID_WIDTH][GRID_HEIGHT], int windowWidth, int windowHeight);
 void drawButton(SDL_Renderer * renderer, Button * button, TTF_Font * font);
 int isHovered(Button * button, int x, int y);
 int isTextFieldHovered(TextField *txt, int x, int y);

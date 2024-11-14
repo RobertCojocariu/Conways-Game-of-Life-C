@@ -28,4 +28,7 @@
 #define SCHEM_IN_PAGE 15
 
 #define MAX_SCHEMATICS 100
+
+#define SCALE_X(value) ((int)((value) * scaleX))
+#define SCALE_Y(value) ((int)((value) * scaleY))
 #endif // ! CONSTANTS

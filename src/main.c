@@ -136,6 +136,10 @@ int main(int argc, char **argv) {
 
     //// END BOILERPLATE ////////////////////////////////////////////////////////////////////  
 
+    int windowWidth, windowHeight;
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+    float scaleX = (float)windowWidth / 1920.0f;
+    float scaleY = (float)windowHeight / 1080.0f;
 
     int cells[GRID_WIDTH][GRID_HEIGHT] = {0};
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -160,25 +164,25 @@ int main(int argc, char **argv) {
 
     //initialize buttons 
     Button play = {
-        (SDL_Rect) {GRID_MARGIN_X+50+20 , height + 20 , 50, 50},
-        (SDL_Color) {0,0, 0, 255},
-        (SDL_Color) {255,255,255, 255},
+        (SDL_Rect) {SCALE_X(GRID_MARGIN_X+50+20), SCALE_Y(height + 20), SCALE_X(50), SCALE_Y(50)},
+        (SDL_Color) {0, 0, 0, 255},
+        (SDL_Color) {255, 255, 255, 255},
         "Play",
         IMG_LoadTexture(renderer, "./assets/play.png")
     };
 
     Button decSpeed = { 
-        (SDL_Rect) {GRID_MARGIN_X , height + 20 , 50, 50},
-        (SDL_Color) {0,0, 0, 255},
-        (SDL_Color) {255,255,255, 255},
+        (SDL_Rect) {SCALE_X(GRID_MARGIN_X), SCALE_Y(height + 20), SCALE_X(50), SCALE_Y(50)},
+        (SDL_Color) {0, 0, 0, 255},
+        (SDL_Color) {255, 255, 255, 255},
         "-",
         NULL
     };
 
     Button incSpeed = {
-        (SDL_Rect) {GRID_MARGIN_X+50+50+20+20 , height + 20 , 50, 50},
-        (SDL_Color) {0,0, 0, 255},
-        (SDL_Color) {255,255,255, 255},
+        (SDL_Rect) {SCALE_X(GRID_MARGIN_X+50+50+20+20), SCALE_Y(height + 20), SCALE_X(50), SCALE_Y(50)},
+        (SDL_Color) {0, 0, 0, 255},
+        (SDL_Color) {255, 255, 255, 255},
         "+",
         NULL
     };
@@ -260,8 +264,6 @@ int main(int argc, char **argv) {
         NULL
     };
     
-    int windowWidth, windowHeight;
-    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
 
     OverlayedLabel nameSchemLabel = {
         0,
@@ -731,7 +733,6 @@ int main(int argc, char **argv) {
             SDL_RenderDrawRect(renderer, &selectionRect);
         }
             
-    SDL_RenderSetLogicalSize(renderer, 1920,1080);
         SDL_RenderPresent(renderer);
     }
 

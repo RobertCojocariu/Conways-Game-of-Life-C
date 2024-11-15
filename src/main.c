@@ -186,9 +186,11 @@ int main(int argc, char **argv) {
         "+",
         NULL
     };
-
+    
+    //TODO : modify with scale from here on
     Button statusLabel = {
-        (SDL_Rect) {GRID_MARGIN_X + (GRID_WIDTH * GRID_SIZE / 2 - 20 - 200), height + 20, 200, 50},
+        // (SDL_Rect) {GRID_MARGIN_X + (GRID_WIDTH * GRID_SIZE / 2 - 20 - 200), height + 20, 200, 50},
+        (SDL_Rect) {SCALE_X(GRID_MARGIN_X + (GRID_WIDTH * GRID_SIZE / 2 - 20 - 200)), SCALE_Y(height + 20), SCALE_X(200), SCALE_Y(50)},
         (SDL_Color) {0,0, 0, 255},
         (SDL_Color) {255,255,255, 255},
         "Placing...",
@@ -196,7 +198,8 @@ int main(int argc, char **argv) {
     };
 
     Button generationLabel = {
-        (SDL_Rect) {GRID_MARGIN_X + (GRID_WIDTH * GRID_SIZE /2 + 20), height + 20, 200, 50},
+        // (SDL_Rect) {GRID_MARGIN_X + (GRID_WIDTH * GRID_SIZE /2 + 20), height + 20, 200, 50},
+        (SDL_Rect) {SCALE_X(GRID_MARGIN_X + (GRID_WIDTH * GRID_SIZE /2 + 20)), SCALE_Y(height + 20), SCALE_X(200), SCALE_Y(50)},
         (SDL_Color) {0,0, 0, 255},
         (SDL_Color) {255,255,255, 255},
         "Generation : 0",
@@ -204,7 +207,8 @@ int main(int argc, char **argv) {
     };
 
     Button speedLabel = {
-        (SDL_Rect) {GRID_MARGIN_X  , height + 80, 150+40, 50},
+        // (SDL_Rect) {GRID_MARGIN_X  , height + 80, 150+40, 50},
+        (SDL_Rect) {SCALE_X(GRID_MARGIN_X), SCALE_Y(height + 80), SCALE_X(150+40), SCALE_Y(50)},
         (SDL_Color) {0,0, 0, 255},
         (SDL_Color) {255,255,255, 255},
         "Speed : 10",
@@ -212,7 +216,8 @@ int main(int argc, char **argv) {
     };
 
     Button clear = {
-        (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE -190, height + 20, 190, 50},
+        // (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE -190, height + 20, 190, 50},
+        (SDL_Rect) {SCALE_X(GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE -190), SCALE_Y(height + 20), SCALE_X(190), SCALE_Y(50)},
         (SDL_Color) {0,0, 0, 255},
         (SDL_Color) {255,255,255, 255},
         "Clear",
@@ -220,7 +225,8 @@ int main(int argc, char **argv) {
     };
 
     Button tutorialButton = {
-        (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE -190, height + 80, 190, 50},
+        // (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE -190, height + 80, 190, 50},
+        (SDL_Rect) {SCALE_X(GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE -190), SCALE_Y(height + 80), SCALE_X(190), SCALE_Y(50)},
         (SDL_Color) {0,0, 0, 255},
         (SDL_Color) {255,255,255, 255},
         "?",
@@ -228,14 +234,20 @@ int main(int argc, char **argv) {
     };
 
     SDL_Rect schematicBackground = {
-        text_offset - 15,
-        GRID_MARGIN_Y,
-        500,
-        (GRID_HEIGHT * GRID_SIZE)
+        // text_offset - 15,
+        // GRID_MARGIN_Y,
+        // 500,
+        // (GRID_HEIGHT * GRID_SIZE)
+        SCALE_X(text_offset - 15), 
+        SCALE_Y(GRID_MARGIN_Y),
+        SCALE_X(500), 
+        SCALE_Y(GRID_HEIGHT * GRID_SIZE) 
+
     };
 
     Button selectionMode = {
-        (SDL_Rect) {incSpeed.rect.x + 50 + 20, height + 20, 50, 50},
+        // (SDL_Rect) {incSpeed.rect.x + 50 + 20, height + 20, 50, 50},
+        (SDL_Rect) {SCALE_X(incSpeed.rect.x + 50 + 20), SCALE_Y(height + 20), SCALE_X(50), SCALE_Y(50)},
         (SDL_Color) {0,0, 0, 255},
         (SDL_Color) {255,255,255, 255},
         "~",
@@ -244,20 +256,23 @@ int main(int argc, char **argv) {
 
 
     TextField textField = {
-        (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40, GRID_MARGIN_Y + 500, 200, 50},
+        // (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40, GRID_MARGIN_Y + 500, 200, 50},
+        (SDL_Rect) {SCALE_X(GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40), SCALE_Y(GRID_MARGIN_Y + 500), SCALE_X(200), SCALE_Y(50)},
         "new_schematic",
         0
     };
 
     Button Ok = {
-        (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40, GRID_MARGIN_Y + 500, 100, 50},
+        // (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40, GRID_MARGIN_Y + 500, 100, 50},
+        (SDL_Rect) {SCALE_X(GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40), SCALE_Y(GRID_MARGIN_Y + 500), SCALE_X(100), SCALE_Y(50)},
         (SDL_Color) {0,0, 0, 255},
         (SDL_Color) {255,255,255, 255},
         "ok",
         NULL
     };
     Button Cancel = {
-        (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40, GRID_MARGIN_Y + 500, 100, 50},
+        // (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40, GRID_MARGIN_Y + 500, 100, 50},
+        (SDL_Rect) {SCALE_X(GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40 + 110), SCALE_Y(GRID_MARGIN_Y + 500), SCALE_X(100), SCALE_Y(50)},
         (SDL_Color) {0,0, 0, 255},
         (SDL_Color) {255,255,255, 255},
         "cancel",
@@ -267,7 +282,8 @@ int main(int argc, char **argv) {
 
     OverlayedLabel nameSchemLabel = {
         0,
-        (SDL_Rect) {windowWidth / 2 - 150, windowHeight / 2 - 200, 400, 200}, 
+        // (SDL_Rect) {windowWidth / 2 - 150, windowHeight / 2 - 200, 400, 200}, 
+        (SDL_Rect) {SCALE_X(windowWidth / 2 - 150), SCALE_Y(windowHeight / 2 - 200), SCALE_X(400), SCALE_Y(200)}, 
         (SDL_Color) {22,24, 28, 255},
         "Enter name",
         &textField,
@@ -275,7 +291,8 @@ int main(int argc, char **argv) {
         &Cancel,
     };
     Button tutorialOk = {
-        (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40, GRID_MARGIN_Y + 500, 100, 50},
+        // (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40, GRID_MARGIN_Y + 500, 100, 50},
+        (SDL_Rect) {SCALE_X(GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE + 40), SCALE_Y(GRID_MARGIN_Y + 500), SCALE_X(100), SCALE_Y(50)},
         (SDL_Color) {0,0, 0, 255},
         (SDL_Color) {255,255,255, 255},
         "ok",
@@ -285,7 +302,8 @@ int main(int argc, char **argv) {
 
     OverlayedLabel tutorialLabel = {
         1,
-        (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE / 2 - 400, GRID_MARGIN_Y + GRID_HEIGHT * GRID_SIZE / 2 - 200, 800, 400},
+        // (SDL_Rect) {GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE / 2 - 400, GRID_MARGIN_Y + GRID_HEIGHT * GRID_SIZE / 2 - 200, 800, 400},
+        (SDL_Rect) {SCALE_X(GRID_MARGIN_X + GRID_WIDTH * GRID_SIZE / 2 - 400), SCALE_Y(GRID_MARGIN_Y + GRID_HEIGHT * GRID_SIZE / 2 - 200), SCALE_X(800), SCALE_Y(400)},
         (SDL_Color) {22,24, 28, 255},
         "Welcome to Conway's Game of Life\n\n",
         NULL,

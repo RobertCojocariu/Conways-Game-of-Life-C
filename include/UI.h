@@ -30,10 +30,11 @@ void drawFilledCells(SDL_Renderer * renderer, int cells[GRID_WIDTH][GRID_HEIGHT]
 void drawButton(SDL_Renderer * renderer, Button * button, TTF_Font * font);
 int isHovered(Button * button, int x, int y);
 int isTextFieldHovered(TextField *txt, int x, int y);
-void drawTextField(TextField *txt, SDL_Renderer * renderer, TTF_Font * font);
-void drawOverlayedLabel(SDL_Renderer * renderer, OverlayedLabel * label, TTF_Font * font);
+void drawTextField(TextField *txt, SDL_Renderer * renderer, TTF_Font * font, int scaleX, int scaleY);
+void drawOverlayedLabel(SDL_Renderer * renderer, OverlayedLabel * label, TTF_Font * font, float scaleX, float scaleY);
 void handleTextField(TextField *textField, SDL_Event *event, Uint32 repeatDelay, Uint32 lastKeyPressTime);
-void drawTutorial(SDL_Renderer * renderer, OverlayedLabel * lbl, TTF_Font * font);
+void drawTutorial(SDL_Renderer * renderer, OverlayedLabel *lbl, TTF_Font * font, float scaleX, float scaleY);
+
 #endif // !UI_H
 
 

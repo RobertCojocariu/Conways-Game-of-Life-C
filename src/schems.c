@@ -4,9 +4,9 @@
 int isSchemHovered(Schematic * schematic, int x, int y) {
     return x >= schematic->rect.x && x <= schematic->rect.x + schematic->rect.w && y >= schematic->rect.y && y <= schematic->rect.y + schematic->rect.h;
 }
-void drawSchematic(SDL_Renderer* renderer, Schematic* schematic, TTF_Font* font) {
-    schematic->rect.w = 150; 
-    schematic->rect.h = 100;
+void drawSchematic(SDL_Renderer* renderer, Schematic* schematic, TTF_Font* font, float scaleX, float scaleY) {
+    schematic->rect.w = SCALE_X(150); 
+    schematic->rect.h = SCALE_Y(100);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderFillRect(renderer, &schematic->rect);
@@ -121,10 +121,10 @@ char **get_txt_files(const char *directory_path, int *count) { // returns an arr
     return txt_files;
 }
 
-void placeSchematic(SDL_Renderer * renderer, Schematic * schematic,  int mouse_x, int mouse_y, int placing) {
+void placeSchematic(SDL_Renderer * renderer, Schematic * schematic,  int mouse_x, int mouse_y, int placing, float scaleX, float scaleY)  {
     if (placing == 2) {
-        int preview_x = (mouse_x - GRID_MARGIN_X) / GRID_SIZE;
-        int preview_y = (mouse_y - GRID_MARGIN_Y) / GRID_SIZE;
+        int preview_x =(mouse_x - GRID_MARGIN_X) / GRID_SIZE;
+        int preview_y =(mouse_y - GRID_MARGIN_Y) / GRID_SIZE;
         SDL_SetRenderDrawColor(renderer, 128, 128, 128, 128); 
        
         // shadow of schem under mouse  
@@ -133,10 +133,10 @@ void placeSchematic(SDL_Renderer * renderer, Schematic * schematic,  int mouse_x
             for(int j = 0; j < schematic->sH; j++) {
                 if(schematic->cells[j][i] == 1) {
                     SDL_Rect cell = {
-                        GRID_MARGIN_X + (preview_x + i) * GRID_SIZE,
-                        GRID_MARGIN_Y + (preview_y + j) * GRID_SIZE,
-                        GRID_SIZE,
-                        GRID_SIZE
+                        GRID_MARGIN_X + preview_x * GRID_SIZE + i * SCALE_X(GRID_SIZE), 
+                        GRID_MARGIN_Y + preview_y * GRID_SIZE + j * SCALE_Y(GRID_SIZE),
+                        SCALE_X(GRID_SIZE),
+                        SCALE_Y(GRID_SIZE)
                     };
                     SDL_RenderFillRect(renderer, &cell);
                 }
@@ -207,7 +207,7 @@ int loadSchematic(Schematic* schematic, TTF_Font* font, SDL_Renderer* renderer) 
 }
 
 
-int saveSchematic(int **sCells, int sW, int sH, Schematic *schematics, int *schemCount, SDL_Renderer *renderer, TTF_Font *font, int index, int textOffset, OverlayedLabel *label) { 
+int saveSchematic(int **sCells, int sW, int sH, Schematic *schematics, int *schemCount, SDL_Renderer *renderer, TTF_Font *font, int index, int textOffset, OverlayedLabel *label, float scaleX, float scaleY) { 
 
     int **cells = malloc(sH * sizeof(int *));
 
@@ -270,7 +270,7 @@ int saveSchematic(int **sCells, int sW, int sH, Schematic *schematics, int *sche
     newSchematic.file = fopen(path, "r");
     printf("\nSchematic '%s' saved successfully.\n", newSchematic.name);
 
-    createSchematicRect(&newSchematic, index, textOffset); 
+    createSchematicRect(&newSchematic, index, textOffset, scaleX, scaleY); 
     createSchematicPreview(&newSchematic, renderer);
 
     printf("Schematic rect: %d %d %d %d\n", newSchematic.rect.x, newSchematic.rect.y, newSchematic.rect.w, newSchematic.rect.h);
@@ -278,12 +278,12 @@ int saveSchematic(int **sCells, int sW, int sH, Schematic *schematics, int *sche
 }
 
 
-void createSchematicRect(Schematic *schematic, int index, int textOffset) {
+void createSchematicRect(Schematic *schematic, int index, int textOffset, float scaleX, float scaleY)  {
     schematic->rect = (SDL_Rect) {
-        textOffset + (index % 3) * 160,
-        GRID_MARGIN_Y + ((index % SCHEM_IN_PAGE) / 3) * 120 + 50,
-        150,
-        100
+        SCALE_X(textOffset + (index % 3) * 160),
+        SCALE_Y(GRID_MARGIN_Y + ((index % SCHEM_IN_PAGE) / 3) * 120 + 50),
+        SCALE_X(150), 
+        SCALE_Y(100)
     };
     printf("Schematic rect: %d %d %d %d\n", schematic->rect.x, schematic->rect.y, schematic->rect.w, schematic->rect.h);
 }

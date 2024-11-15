@@ -120,9 +120,7 @@ int isTextFieldHovered(TextField *txt, int x, int y) {
 
 
 
-void drawTextField(TextField *txt, SDL_Renderer * renderer, TTF_Font * font) {
-    txt->rect.w = 200;
-    txt->rect.h = 50;
+void drawTextField(TextField *txt, SDL_Renderer * renderer, TTF_Font * font, int scaleX, int scaleY) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderFillRect(renderer, &txt->rect);
 
@@ -136,7 +134,7 @@ void drawTextField(TextField *txt, SDL_Renderer * renderer, TTF_Font * font) {
     SDL_RenderDrawRect(renderer, &txt->rect);
 }
 
-void drawOverlayedLabel(SDL_Renderer * renderer, OverlayedLabel * label, TTF_Font * font) {
+void drawOverlayedLabel(SDL_Renderer * renderer, OverlayedLabel * label, TTF_Font * font, float scaleX, float scaleY) { 
     if(label->active == 0) {
         return;
     }
@@ -147,10 +145,11 @@ void drawOverlayedLabel(SDL_Renderer * renderer, OverlayedLabel * label, TTF_Fon
     SDL_RenderDrawRect(renderer, &label->rect);
     if(label->txt) {
         // move textfield to the middle 
-        label->txt->rect.x = label->rect.x + label->rect.w / 2 - label->txt->rect.w / 2;
-        label->txt->rect.y = label->rect.y + 50;
+        // label->txt->rect.x = label->rect.x + label->rect.w / 2 - label->txt->rect.w / 2;
+        label->txt->rect.x =(label->rect.x + label->rect.w / 2 - label->txt->rect.w / 2);
+        label->txt->rect.y =label->rect.y + SCALE_Y(50);
 
-        drawTextField(label->txt, renderer, font);
+        drawTextField(label->txt, renderer, font, scaleX, scaleY);
     }
     if(label->btn1) {
         if(label->txt == NULL && label->btn2 == NULL) { // if there is only one button
@@ -232,15 +231,26 @@ void handleTextField(TextField *textField, SDL_Event *event, Uint32 repeatDelay,
     }
 }
 
-void drawTutorial(SDL_Renderer * renderer, OverlayedLabel *lbl, TTF_Font * font) { 
+void drawTutorial(SDL_Renderer * renderer, OverlayedLabel *lbl, TTF_Font * font, float scaleX, float scaleY) { 
     if(lbl->active == 0) {
         return;
     }
-    renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 80, "1. Left click on the grid to place cells");
-    renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 110, "2. Right click on the grid to remove cells");
-    renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 140, "3. SPACE or buttons to start/stop simulation");
-    renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 170, "4. A / D or buttons to change the speed");
-    renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 200, "5. Click on a schematic to select it");
-    renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 230, "6. Use the ~ button to enter schematic selection mode");
-    renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 260, "7. Use the ? button to open this menu");
+    // renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 80, "1. Left click on the grid to place cells");
+    // renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 110, "2. Right click on the grid to remove cells");
+    // renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 140, "3. SPACE or buttons to start/stop simulation");
+    // renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 170, "4. A / D or buttons to change the speed");
+    // renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 200, "5. Click on a schematic to select it");
+    // renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 230, "6. Use the ~ button to enter schematic selection mode");
+    // renderString(renderer, font, lbl->rect.x + 230, lbl->rect.y + 260, "7. Use the ? button to open this menu");
+    //draw them centerd and scaled 
+    renderString(renderer, font, lbl->rect.x + SCALE_X(230), lbl->rect.y + SCALE_Y(80), "1. Left click on the grid to place cells");
+    renderString(renderer, font, lbl->rect.x + SCALE_X(230), lbl->rect.y + SCALE_Y(110), "2. Right click on the grid to remove cells");
+    renderString(renderer, font, lbl->rect.x + SCALE_X(230), lbl->rect.y + SCALE_Y(140), "3. SPACE or buttons to start/stop simulation"); 
+    renderString(renderer, font, lbl->rect.x + SCALE_X(230), lbl->rect.y + SCALE_Y(170), "4. A / D or buttons to change the speed"); 
+    renderString(renderer, font, lbl->rect.x + SCALE_X(230), lbl->rect.y + SCALE_Y(200), "5. Click on a schematic to select it");
+    renderString(renderer, font, lbl->rect.x + SCALE_X(230), lbl->rect.y + SCALE_Y(230), "6. Use the ~ button to enter schematic selection mode");
+    renderString(renderer, font, lbl->rect.x + SCALE_X(230), lbl->rect.y + SCALE_Y(260), "7. Use the ? button to open this menu");
+
+
+
 }

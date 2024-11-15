@@ -99,8 +99,12 @@ int main(int argc, char **argv) {
         SDL_Quit();
         return 1;
     }
-
+    int windowWidth, windowHeight;
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+    float scaleX = (float)windowWidth / 1920.0f;
+    float scaleY = (float)windowHeight / 1080.0f;
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
     if (!renderer) {
         SDL_DestroyWindow(window);
         printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -116,7 +120,8 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    TTF_Font *font = TTF_OpenFont(FONT_PATH, 24);
+
+    TTF_Font *font = TTF_OpenFont(FONT_PATH, SCALE_Y(BASE_FONT_SIZE));
     if (!font) {
         printf("TTF_OpenFont: %s\n", TTF_GetError());
         SDL_DestroyRenderer(renderer);
@@ -125,7 +130,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    TTF_Font *schemFont = TTF_OpenFont(FONT_PATH, 18);
+    TTF_Font *schemFont = TTF_OpenFont(FONT_PATH, SCALE_Y(BASE_FONT_SIZE_SMALL)+2);
     if (!schemFont) {
         printf("TTF_OpenFont: %s\n", TTF_GetError());
         SDL_DestroyRenderer(renderer);
@@ -136,10 +141,6 @@ int main(int argc, char **argv) {
 
     //// END BOILERPLATE ////////////////////////////////////////////////////////////////////  
 
-    int windowWidth, windowHeight;
-    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
-    float scaleX = (float)windowWidth / 1920.0f;
-    float scaleY = (float)windowHeight / 1080.0f;
 
     int cells[GRID_WIDTH][GRID_HEIGHT] = {0};
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -247,7 +248,7 @@ int main(int argc, char **argv) {
 
     Button selectionMode = {
         // (SDL_Rect) {incSpeed.rect.x + 50 + 20, height + 20, 50, 50},
-        (SDL_Rect) {SCALE_X(incSpeed.rect.x + 50 + 20), SCALE_Y(height + 20), SCALE_X(50), SCALE_Y(50)},
+        (SDL_Rect) {incSpeed.rect.x + SCALE_X(50 + 20), SCALE_Y(height + 20), SCALE_X(50), SCALE_Y(50)},
         (SDL_Color) {0,0, 0, 255},
         (SDL_Color) {255,255,255, 255},
         "~",
@@ -283,7 +284,7 @@ int main(int argc, char **argv) {
     OverlayedLabel nameSchemLabel = {
         0,
         // (SDL_Rect) {windowWidth / 2 - 150, windowHeight / 2 - 200, 400, 200}, 
-        (SDL_Rect) {SCALE_X(windowWidth / 2 - 150), SCALE_Y(windowHeight / 2 - 200), SCALE_X(400), SCALE_Y(200)}, 
+        (SDL_Rect) {windowWidth / 2 - SCALE_X(150), windowHeight / 2 - SCALE_Y(200), SCALE_X(400), SCALE_Y(200)}, 
         (SDL_Color) {22,24, 28, 255},
         "Enter name",
         &textField,
@@ -338,8 +339,8 @@ int main(int argc, char **argv) {
     for(int i = 0; i < schemCount; i++) {
 
         schematics[i].rect = (SDL_Rect) {
-            text_offset + (i % 3) * 160 ,
-            GRID_MARGIN_Y + ((i % SCHEM_IN_PAGE)/3) * 120 + 50,
+            SCALE_X(text_offset + (i % 3) * 160) ,
+            SCALE_Y(GRID_MARGIN_Y + ((i % SCHEM_IN_PAGE)/3) * 120 + 50),
             150,
             100};
 
@@ -373,14 +374,19 @@ int main(int argc, char **argv) {
 
 
     Button pageLabel = {
-        (SDL_Rect) {schematicBackground.x + schematicBackground.w/2 - 50, GRID_MARGIN_Y + GRID_HEIGHT * GRID_SIZE + 20, 100, 50},
+        // (SDL_Rect) {schematicBackground.x + schematicBackground.w/2 - 50, GRID_MARGIN_Y + GRID_HEIGHT * GRID_SIZE + 20, 100, 50},
+        (SDL_Rect) {
+            schematicBackground.x + schematicBackground.w/2 - SCALE_X(50),
+            SCALE_Y(GRID_MARGIN_Y + GRID_HEIGHT * GRID_SIZE + 20),
+            SCALE_X(100), SCALE_Y(50)},
         (SDL_Color) {0,0, 0, 255},
         (SDL_Color) {255,255,255, 255},
         pageLabelString,
         NULL
     };
     Button prevPage = {
-        (SDL_Rect) {pageLabel.rect.x - 60, pageLabel.rect.y, 50, 50},
+        // (SDL_Rect) {pageLabel.rect.x - 60, pageLabel.rect.y, 50, 50},
+        (SDL_Rect) {pageLabel.rect.x - SCALE_X(60), pageLabel.rect.y, SCALE_X(50), SCALE_Y(50)},
         (SDL_Color) {0,0, 0, 255},
         (SDL_Color) {255,255,255, 255},
         "<",
@@ -388,7 +394,8 @@ int main(int argc, char **argv) {
     };
 
     Button nextPage = {
-        (SDL_Rect) {pageLabel.rect.x + pageLabel.rect.w + 10, pageLabel.rect.y, 50, 50},
+        // (SDL_Rect) {pageLabel.rect.x + pageLabel.rect.w + 10, pageLabel.rect.y, 50, 50},
+        (SDL_Rect) {pageLabel.rect.x + pageLabel.rect.w + SCALE_X(10), pageLabel.rect.y, SCALE_X(50), SCALE_Y(50)},
         (SDL_Color) {0,0, 0, 255},
         (SDL_Color) {255,255,255, 255},
         ">",
@@ -416,16 +423,16 @@ int main(int argc, char **argv) {
             }
             
             SDL_GetMouseState(&mouse_x, &mouse_y);
-            mouse_x = (int)(mouse_x* (float)1920 / screen_width);
-            mouse_y = (int)(mouse_y * (float)1080 / screen_height);
+            
 
 
             if (((event.type == SDL_MOUSEBUTTONDOWN) && placing==1) || (event.type == SDL_MOUSEMOTION && placing==1 && mouseDown)) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                if(x >= GRID_MARGIN_X && x < GRID_MARGIN_X + GRID_WIDTH * grid_size && y >= GRID_MARGIN_Y && y < GRID_MARGIN_Y + GRID_HEIGHT * grid_size && !nameSchemLabel.active && !tutorialLabel.active) { //in bound
-                    int rx = (x - GRID_MARGIN_X) / grid_size;
-                    int ry = (y - GRID_MARGIN_Y) / grid_size;
+                // if(x >= GRID_MARGIN_X && x < GRID_MARGIN_X + GRID_WIDTH * grid_size && y >= GRID_MARGIN_Y && y < GRID_MARGIN_Y + GRID_HEIGHT * grid_size && !nameSchemLabel.active && !tutorialLabel.active) { //in bound
+                if(x >= SCALE_X(GRID_MARGIN_X) && x < SCALE_X(GRID_MARGIN_X + GRID_WIDTH * grid_size) && y >= SCALE_Y(GRID_MARGIN_Y) && y < SCALE_Y(GRID_MARGIN_Y + GRID_HEIGHT * grid_size) && !nameSchemLabel.active && !tutorialLabel.active) { //in bound
+                    int rx = (x - SCALE_X(GRID_MARGIN_X)) / SCALE_X(grid_size);
+                    int ry = (y - SCALE_Y(GRID_MARGIN_Y)) / SCALE_Y(grid_size);
 
                     if (event.button.button == SDL_BUTTON_LEFT) {
                         cells[rx][ry] = 1;
@@ -512,24 +519,34 @@ int main(int argc, char **argv) {
                 }
 
                 if (placing == 2) { //placing schematics
+
+                    int grid_margin_x = SCALE_X(GRID_MARGIN_X);
+                    int grid_margin_y = SCALE_Y(GRID_MARGIN_Y); 
+                    int scaledGridSize = SCALE_X(grid_size);
+                    int grid_width = GRID_WIDTH; 
+                    int grid_height = GRID_HEIGHT;
+
                     if (event.button.button == SDL_BUTTON_RIGHT) {
                         placing = 1;
                         break;
                     }
-                    if (mouse_x < GRID_MARGIN_X || mouse_x >= GRID_MARGIN_X + GRID_WIDTH * grid_size ||
-                        mouse_y < GRID_MARGIN_Y || mouse_y >= GRID_MARGIN_Y + GRID_HEIGHT * grid_size) {
+
+                    if(mouse_x < grid_margin_x - scaledGridSize || mouse_x >= grid_margin_x + grid_width * scaledGridSize ||
+                        mouse_y < grid_margin_y - scaledGridSize || mouse_y >= grid_margin_y + grid_height * scaledGridSize) {
                         break;
                     }
 
-                    int preview_x = (mouse_x - GRID_MARGIN_X) / grid_size;
-                    int preview_y = (mouse_y - GRID_MARGIN_Y) / grid_size;
+                    int preview_x = (mouse_x - grid_margin_x) / scaledGridSize; 
+                    int preview_y = (mouse_y - grid_margin_y) / scaledGridSize;
                     
-                    if (preview_x < 0 || preview_x >= GRID_WIDTH || preview_y < 0 || preview_y >= GRID_HEIGHT) {
+                    // if (preview_x < 0 || preview_x >= GRID_WIDTH || preview_y < 0 || preview_y >= GRID_HEIGHT) {
+                    if(preview_x < 0 || preview_x >= grid_width || preview_y < 0 || preview_y >= grid_height) {
                         break;
                     }
                     for(int i = 0; i < schematics[indexOfSchemPressed].sW; i++) {
                         for(int j = 0; j < schematics[indexOfSchemPressed].sH; j++) {
-                            if(schematics[indexOfSchemPressed].cells[j][i] == 1 && preview_x + i < GRID_WIDTH && preview_y + j < GRID_HEIGHT) {
+                            // if(schematics[indexOfSchemPressed].cells[j][i] == 1 && preview_x + i < GRID_WIDTH && preview_y + j < GRID_HEIGHT) {
+                            if(schematics[indexOfSchemPressed].cells[j][i] == 1 && preview_x + i < grid_width && preview_y + j < grid_height) {
                                 cells[preview_x + i][preview_y + j] = 1;
                             }
                         }
@@ -553,11 +570,13 @@ int main(int argc, char **argv) {
                     break;
 
                 }
-                if (mouse_x < GRID_MARGIN_X - GRID_SIZE || mouse_x >= GRID_MARGIN_X + GRID_WIDTH * grid_size ||
-                    mouse_y < GRID_MARGIN_Y - GRID_SIZE || mouse_y >= GRID_MARGIN_Y + GRID_HEIGHT * grid_size) {
+                // if(mouse_x < GRID_MARGIN_X || mouse_x >= GRID_MARGIN_X + GRID_WIDTH * grid_size ||
+                //     mouse_y < GRID_MARGIN_Y || mouse_y >= GRID_MARGIN_Y + GRID_HEIGHT * grid_size) 
+                if(mouse_x < SCALE_X(GRID_MARGIN_X) || mouse_x >= SCALE_X(GRID_MARGIN_X + GRID_WIDTH * grid_size) ||
+                    mouse_y < SCALE_Y(GRID_MARGIN_Y) || mouse_y >= SCALE_Y(GRID_MARGIN_Y + GRID_HEIGHT * grid_size))
+                {
                     break;
                 }
-
 
                 if (event.type == SDL_MOUSEBUTTONDOWN) {
                     printf("Mouse down\n");
@@ -623,18 +642,18 @@ int main(int argc, char **argv) {
 
             }// end of selection mode  
             if(event.type == SDL_MOUSEBUTTONDOWN && nameSchemLabel.active) {
-                drawOverlayedLabel(renderer, &nameSchemLabel, font);
+                drawOverlayedLabel(renderer, &nameSchemLabel, font, scaleX, scaleY);
                 if(isHovered(&Ok, mouse_x, mouse_y)) {
                     placing = 1;
                     nameSchemLabel.active = 0; 
-                    if (saveSchematic(scCells, selectionW, selectionW, schematics, &schemCount, renderer, schemFont, schemCount, text_offset, &nameSchemLabel)) {
+                    if (saveSchematic(scCells, selectionW, selectionW, schematics, &schemCount, renderer, schemFont, schemCount, text_offset, &nameSchemLabel, scaleX, scaleY)) {
                         free(scCells);
                         printf("schematic saved\n");
                         schemCountModulated = page * SCHEM_IN_PAGE > schemCount ? schemCount % SCHEM_IN_PAGE : SCHEM_IN_PAGE;
                         totalPages = schemCount / SCHEM_IN_PAGE + 1;
                         
                         createSchematicPreview(&schematics[schemCount - 1], renderer); 
-                        createSchematicRect(&schematics[schemCount - 1], schemCount - 1, text_offset);
+                        createSchematicRect(&schematics[schemCount - 1], schemCount - 1, text_offset, scaleX, scaleY);
                     }
                     break;
                 }
@@ -668,13 +687,16 @@ int main(int argc, char **argv) {
             lastUpdateTime = SDL_GetTicks();
         }
 
-        if(placing){
+        if(placing == 1){
              play.texture = playTexture;
              statusLabel.text = "Placing...";
         }
-        else {
+        else if(placing == 0) {
             play.texture = pauseTexture; 
             statusLabel.text = "Running...";
+        }
+        else if(placing == 3) {
+            statusLabel.text = "Selecting...";
         }
 
 
@@ -721,9 +743,9 @@ int main(int argc, char **argv) {
         drawButton(renderer, &pageLabel, font);
     
         // overlayed labels
-        drawOverlayedLabel(renderer, &nameSchemLabel, font);
-        drawOverlayedLabel(renderer, &tutorialLabel, font);
-        drawTutorial(renderer, &tutorialLabel, schemFont);
+        drawOverlayedLabel(renderer, &nameSchemLabel, font, scaleX, scaleY);
+        drawOverlayedLabel(renderer, &tutorialLabel, font, scaleX, scaleY);
+        drawTutorial(renderer, &tutorialLabel, schemFont, scaleX, scaleY);
 
 
 
@@ -732,13 +754,13 @@ int main(int argc, char **argv) {
         // printf("LAST ADDED SCHEM RECT : %d %d %d %d\n", lastAdded.rect.x, lastAdded.rect.y, lastAdded.rect.w, lastAdded.rect.h);
         for(int i = 0; i < schemCountModulated; i++) {
             // printf("DRAWING SCHEMATIC %i, name %s\n", i, schematics[i + (page-1) * SCHEM_IN_PAGE].name);
-            drawSchematic(renderer, &schematics[i + (page-1) * SCHEM_IN_PAGE],schemFont);
+            drawSchematic(renderer, &schematics[i + (page-1) * SCHEM_IN_PAGE],schemFont, scaleX, scaleY);
             
         }
 
 
         if(placing == 2) {
-            placeSchematic(renderer, &schematics[indexOfSchemPressed], mouse_x, mouse_y, placing);
+            placeSchematic(renderer, &schematics[indexOfSchemPressed], mouse_x, mouse_y, placing, scaleX, scaleY);
         }
         if (selecting) {
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 128); 
@@ -748,6 +770,12 @@ int main(int argc, char **argv) {
                 .w = (selection_end_x - selection_start_x + 1) * grid_size,
                 .h = (selection_end_y - selection_start_y + 1) * grid_size
             };
+            // SDL_Rect selectionRect = {
+            //     .x = SCALE_X(GRID_MARGIN_X + selection_start_x * grid_size),
+            //     .y = SCALE_Y(GRID_MARGIN_Y + selection_start_y * grid_size),
+            //     .w = (selection_end_x - selection_start_x + 1) * grid_size,
+            //     .h = (selection_end_y - selection_start_y + 1) * grid_size
+            // };
             SDL_RenderDrawRect(renderer, &selectionRect);
         }
             

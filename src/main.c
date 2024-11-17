@@ -312,6 +312,17 @@ int main(int argc, char **argv) {
         NULL,
     };
 
+    OverlayedLabel nameTakenLabel = {
+        0,
+        // (SDL_Rect) {windowWidth / 2 - 150, windowHeight / 2 - 200, 400, 200}, 
+        (SDL_Rect) {windowWidth / 2 - SCALE_X(150), windowHeight / 2 - SCALE_Y(200), SCALE_X(400), SCALE_Y(100)}, 
+        (SDL_Color) {63,63,35, 255},
+        "Name already taken!",
+        NULL,
+        &tutorialOk,
+        NULL,
+    };
+    
     // preloading textures 
     SDL_Texture *playTexture = IMG_LoadTexture(renderer, "./assets/play.png"); 
     SDL_Texture *pauseTexture = IMG_LoadTexture(renderer, "./assets/pause.png");
@@ -430,7 +441,7 @@ int main(int argc, char **argv) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 // if(x >= GRID_MARGIN_X && x < GRID_MARGIN_X + GRID_WIDTH * grid_size && y >= GRID_MARGIN_Y && y < GRID_MARGIN_Y + GRID_HEIGHT * grid_size && !nameSchemLabel.active && !tutorialLabel.active) { //in bound
-                if(x >= SCALE_X(GRID_MARGIN_X) && x < SCALE_X(GRID_MARGIN_X + GRID_WIDTH * grid_size) && y >= SCALE_Y(GRID_MARGIN_Y) && y < SCALE_Y(GRID_MARGIN_Y + GRID_HEIGHT * grid_size) && !nameSchemLabel.active && !tutorialLabel.active) { //in bound
+                if(x >= SCALE_X(GRID_MARGIN_X) && x < SCALE_X(GRID_MARGIN_X + GRID_WIDTH * grid_size) && y >= SCALE_Y(GRID_MARGIN_Y) && y < SCALE_Y(GRID_MARGIN_Y + GRID_HEIGHT * grid_size) && !nameSchemLabel.active && !tutorialLabel.active && !nameTakenLabel.active) { //in bound
                     int rx = (x - SCALE_X(GRID_MARGIN_X)) / SCALE_X(grid_size);
                     int ry = (y - SCALE_Y(GRID_MARGIN_Y)) / SCALE_Y(grid_size);
 
@@ -446,7 +457,7 @@ int main(int argc, char **argv) {
             if (event.type == SDL_MOUSEBUTTONUP) {
                 mouseDown = 0;
             }
-            if (event.type == SDL_KEYDOWN && !nameSchemLabel.active && !tutorialLabel.active) {
+            if (event.type == SDL_KEYDOWN && !nameSchemLabel.active && !tutorialLabel.active && !nameTakenLabel.active) {
                 switch (event.key.keysym.sym) {
                     case SDLK_SPACE:
                         placing = !placing;
@@ -646,16 +657,28 @@ int main(int argc, char **argv) {
                 if(isHovered(&Ok, mouse_x, mouse_y)) {
                     placing = 1;
                     nameSchemLabel.active = 0; 
-                    if (saveSchematic(scCells, selectionW, selectionW, schematics, &schemCount, renderer, schemFont, schemCount, text_offset, &nameSchemLabel, scaleX, scaleY)) {
-                        free(scCells);
-                        printf("schematic saved\n");
-                        schemCountModulated = page * SCHEM_IN_PAGE > schemCount ? schemCount % SCHEM_IN_PAGE : SCHEM_IN_PAGE;
-                        totalPages = schemCount / SCHEM_IN_PAGE + 1;
-                        
-                        createSchematicPreview(&schematics[schemCount - 1], renderer); 
-                        createSchematicRect(&schematics[schemCount - 1], schemCount - 1, text_offset, scaleX, scaleY);
+                    //check if name is already taken by another schematic 
+                    int taken = 0;
+                    for(int i = 0; i < schemCount; i++) { 
+                        if(strcmp(schematics[i].name, textField.text) == 0) {
+                            taken = 1;
+                            break;
+                        }
                     }
-                    break;
+                    if(taken) {
+                        nameTakenLabel.active = 1;
+                    }else {
+                        if (saveSchematic(scCells, selectionW, selectionW, schematics, &schemCount, renderer, schemFont, schemCount, text_offset, &nameSchemLabel, scaleX, scaleY)) {
+                            free(scCells);
+                            printf("schematic saved\n");
+                            schemCountModulated = page * SCHEM_IN_PAGE > schemCount ? schemCount % SCHEM_IN_PAGE : SCHEM_IN_PAGE;
+                            totalPages = schemCount / SCHEM_IN_PAGE + 1;
+                            
+                            createSchematicPreview(&schematics[schemCount - 1], renderer); 
+                            createSchematicRect(&schematics[schemCount - 1], schemCount - 1, text_offset, scaleX, scaleY);
+                        }
+                        break;
+                    }
                 }
                 else if(isHovered(&Cancel, mouse_x, mouse_y)) {
                     printf("Cancel pressed\n");
@@ -673,16 +696,17 @@ int main(int argc, char **argv) {
                 } 
 
             }
-            if(event.type == SDL_MOUSEBUTTONDOWN && tutorialLabel.active) {
+            if(event.type == SDL_MOUSEBUTTONDOWN && (tutorialLabel.active || nameTakenLabel.active)) {
                 if(isHovered(&tutorialOk, mouse_x, mouse_y)) {
                     tutorialLabel.active = 0;
+                    nameTakenLabel.active = 0;
                     placing = 1;
                 }
             }
         }//end of event handling
         
         // logic 
-        if (!placing && SDL_GetTicks() - lastUpdateTime > delay && !nameSchemLabel.active && !tutorialLabel.active) {
+        if (!placing && SDL_GetTicks() - lastUpdateTime > delay && !nameSchemLabel.active && !tutorialLabel.active && !nameTakenLabel.active) {
             generation += logic(cells);
             lastUpdateTime = SDL_GetTicks();
         }
@@ -746,6 +770,7 @@ int main(int argc, char **argv) {
         drawOverlayedLabel(renderer, &nameSchemLabel, font, scaleX, scaleY);
         drawOverlayedLabel(renderer, &tutorialLabel, font, scaleX, scaleY);
         drawTutorial(renderer, &tutorialLabel, schemFont, scaleX, scaleY);
+        drawOverlayedLabel(renderer, &nameTakenLabel, font, scaleX, scaleY);
 
 
 

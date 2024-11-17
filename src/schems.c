@@ -207,33 +207,49 @@ int loadSchematic(Schematic* schematic, TTF_Font* font, SDL_Renderer* renderer) 
 }
 
 
-int saveSchematic(int **sCells, int sW, int sH, Schematic *schematics, int *schemCount, SDL_Renderer *renderer, TTF_Font *font, int index, int textOffset, OverlayedLabel *label, float scaleX, float scaleY) { 
-
-    int **cells = malloc(sH * sizeof(int *));
-
-    for (int i = 0; i < sH; i++) {
-        cells[i] = malloc(sW * sizeof(int));
+int saveSchematic(int **sCells, int sW, int sH, Schematic *schematics, int *schemCount, SDL_Renderer *renderer, TTF_Font *font, int index, int textOffset, OverlayedLabel *label, float scaleX, float scaleY) {
+    if (!sCells || !schematics || !schemCount || !label || !renderer || !font) {
+        printf("Error: Invalid input parameters\n");
+        return 0;
     }
 
+    // Allocate memory for new schematic cells
+    int **cells = malloc(sH * sizeof(int *));
+    if (!cells) {
+        printf("Error: Memory allocation for cells failed\n");
+        return 0;
+    }
+    for (int i = 0; i < sH; i++) {
+        cells[i] = malloc(sW * sizeof(int));
+        if (!cells[i]) {
+            printf("Error: Memory allocation for cells row failed\n");
+            for (int j = 0; j < i; j++) free(cells[j]);
+            free(cells);
+            return 0;
+        }
+    }
+
+    // Copy the data directly into cells
     for (int i = 0; i < sH; i++) {
         for (int j = 0; j < sW; j++) {
             cells[i][j] = sCells[i][j];
         }
     }
 
-
+    // Prompt user for schematic name and copy from label
     char nameInput[50];
-    printf("Enter schematic name: "); 
+    strncpy(nameInput, label->txt->text, sizeof(nameInput) - 1);
+    nameInput[sizeof(nameInput) - 1] = '\0'; // Ensure null-termination
 
-    //read the name from the text field 
-
-    strcpy(nameInput, label->txt->text);
     printf("Name: %s\n", nameInput);
 
+    // Initialize the new schematic
     Schematic newSchematic;
     newSchematic.name = malloc(strlen(nameInput) + 1);
-    if (newSchematic.name == NULL) {
+    if (!newSchematic.name) {
         printf("Error: Memory allocation for schematic name failed\n");
+        for (int i = 0; i < sH; i++) free(cells[i]);
+        free(cells);
         return 0;
     }
     strcpy(newSchematic.name, nameInput);
@@ -243,37 +259,48 @@ int saveSchematic(int **sCells, int sW, int sH, Schematic *schematics, int *sche
     newSchematic.sH = sH;
     newSchematic.preview = NULL;
 
-    schematics[(*schemCount)++] = newSchematic; // dereference schemCount and increment it
+    // Save the schematic to the array and increment count
+    schematics[(*schemCount)++] = newSchematic;
 
-    char path[50]; 
-    
+    // Generate the file path and save the schematic
+    char path[50];
     snprintf(path, sizeof(path), "schematics/%s.txt", newSchematic.name);
+
     newSchematic.file = fopen(path, "w");
     if (!newSchematic.file) {
         printf("Error: Could not open file for saving schematic\n");
         free(newSchematic.name);
+        for (int i = 0; i < sH; i++) free(cells[i]);
+        free(cells);
         return 0;
     }
-    
-    // saving data into file 
+
+    // Write schematic data to file
     fprintf(newSchematic.file, "%s\n", newSchematic.name);
     fprintf(newSchematic.file, "%d %d\n", newSchematic.sW, newSchematic.sH);
 
-    for (int i = 0; i < newSchematic.sH; i++) {
-        for (int j = 0; j < newSchematic.sW; j++) {
-            fprintf(newSchematic.file, "%d", newSchematic.cells[i][j]);
+    for (int i = 0; i < sH; i++) {
+        for (int j = 0; j < sW; j++) {
+            fprintf(newSchematic.file, "%d", cells[i][j]);
         }
-        fprintf(newSchematic.file, "\n");  
+        fprintf(newSchematic.file, "\n");
     }
 
     fclose(newSchematic.file);
+
     newSchematic.file = fopen(path, "r");
+    if (!newSchematic.file) {
+        printf("Error: Could not reopen file for reading\n");
+    }
+
     printf("\nSchematic '%s' saved successfully.\n", newSchematic.name);
 
-    createSchematicRect(&newSchematic, index, textOffset, scaleX, scaleY); 
+    // Create schematic rect and preview
+    createSchematicRect(&newSchematic, index, textOffset, scaleX, scaleY);
     createSchematicPreview(&newSchematic, renderer);
 
     printf("Schematic rect: %d %d %d %d\n", newSchematic.rect.x, newSchematic.rect.y, newSchematic.rect.w, newSchematic.rect.h);
+
     return 1;
 }
 

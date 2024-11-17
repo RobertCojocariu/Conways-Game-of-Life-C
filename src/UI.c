@@ -202,9 +202,9 @@ void handleTextField(TextField *textField, SDL_Event *event, Uint32 repeatDelay,
                     // alphanumeric input
                     SDL_Keycode key = event->key.keysym.sym;
                     if ((key >= SDLK_a && key <= SDLK_z) || (key >= SDLK_0 && key <= SDLK_9) || key == SDLK_SPACE) {
-                        if (key == SDLK_SPACE) {
-                            add = ' ';
-                        } else if (key >= SDLK_a && key <= SDLK_z) {
+                        // if (key == SDLK_SPACE) {
+                        //     add = ' ';
+                        if (key >= SDLK_a && key <= SDLK_z) {
                             add = 'a' + (key - SDLK_a); // maps SDLK_a to 'a', SDLK_b to 'b', ... 
                         } else if (key >= SDLK_0 && key <= SDLK_9) {
                             add = '0' + (key - SDLK_0); // maps SDLK_0 to '0', SDLK_1 to '1', ...

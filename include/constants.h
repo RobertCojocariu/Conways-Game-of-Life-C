@@ -1,13 +1,20 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H 
 
-#include <SDL2/SDL_events.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+
+#ifdef __APPLE__ //macOS
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
+#else
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
-#include <string.h>
+#endif
 
 #define width 1000
 #define height 800

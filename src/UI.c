@@ -1,6 +1,4 @@
 #include "../include/constants.h"
-#include <SDL2/SDL_keycode.h>
-#include <SDL2/SDL_render.h>
 #include <stdio.h>
 #include "../include/UI.h"
 #include "../include/schems.h"

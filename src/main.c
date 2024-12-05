@@ -79,16 +79,24 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    int screen_width = display_mode.w; 
-    int screen_height = display_mode.h;
+    // int screen_width = display_mode.w; 
+    // int screen_height = display_mode.h;
+    int screen_width = 1280; 
+    int screen_height = 720;
 
 
-    SDL_Window *window = SDL_CreateWindow("Game of Life",
-                                          SDL_WINDOWPOS_UNDEFINED,
-                                          SDL_WINDOWPOS_UNDEFINED,
-                                          screen_width,
-                                            screen_height,
-                                          SDL_WINDOW_SHOWN);
+    int target_width, target_height;
+
+    CalculateNearest16_9Resolution(screen_width, screen_height, &target_width, &target_height);
+
+    SDL_Window* window = SDL_CreateWindow(
+        "Game of Life",
+        SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED,
+        target_width,
+        target_height,
+        SDL_WINDOW_SHOWN
+    );
     if (!window) {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
         SDL_Quit();
@@ -429,14 +437,16 @@ int main(int argc, char **argv) {
             }
             
             SDL_GetMouseState(&mouse_x, &mouse_y);
-            
 
 
             if (((event.type == SDL_MOUSEBUTTONDOWN) && placing==1) || (event.type == SDL_MOUSEMOTION && placing==1 && mouseDown)) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 // if(x >= GRID_MARGIN_X && x < GRID_MARGIN_X + GRID_WIDTH * grid_size && y >= GRID_MARGIN_Y && y < GRID_MARGIN_Y + GRID_HEIGHT * grid_size && !nameSchemLabel.active && !tutorialLabel.active) { //in bound
-                if(x >= SCALE_X(GRID_MARGIN_X) && x < SCALE_X(GRID_MARGIN_X + GRID_WIDTH * grid_size) && y >= SCALE_Y(GRID_MARGIN_Y) && y < SCALE_Y(GRID_MARGIN_Y + GRID_HEIGHT * grid_size) && !nameSchemLabel.active && !tutorialLabel.active && !nameTakenLabel.active) { //in bound
+                if(x >= SCALE_X(GRID_MARGIN_X) && x < SCALE_X(GRID_MARGIN_X) + GRID_WIDTH * SCALE_X(grid_size) &&
+                   y >= SCALE_Y(GRID_MARGIN_Y) && y < SCALE_Y(GRID_MARGIN_Y) + GRID_HEIGHT * SCALE_Y(grid_size) &&
+                   !nameSchemLabel.active && !tutorialLabel.active && !nameTakenLabel.active
+                ) { //in bound
                     int rx = (x - SCALE_X(GRID_MARGIN_X)) / SCALE_X(grid_size);
                     int ry = (y - SCALE_Y(GRID_MARGIN_Y)) / SCALE_Y(grid_size);
 
@@ -578,9 +588,12 @@ int main(int argc, char **argv) {
                 }
                 // if(mouse_x < GRID_MARGIN_X || mouse_x >= GRID_MARGIN_X + GRID_WIDTH * grid_size ||
                 //     mouse_y < GRID_MARGIN_Y || mouse_y >= GRID_MARGIN_Y + GRID_HEIGHT * grid_size) 
-                if(mouse_x < SCALE_X(GRID_MARGIN_X) || mouse_x >= SCALE_X(GRID_MARGIN_X + GRID_WIDTH * grid_size) ||
-                    mouse_y < SCALE_Y(GRID_MARGIN_Y) || mouse_y >= SCALE_Y(GRID_MARGIN_Y + GRID_HEIGHT * grid_size))
+                if(mouse_x < SCALE_X(GRID_MARGIN_X) || mouse_x >= SCALE_X(GRID_MARGIN_X) + GRID_WIDTH * SCALE_X(grid_size) ||
+                    mouse_y < SCALE_Y(GRID_MARGIN_Y) || mouse_y >= SCALE_Y(GRID_MARGIN_Y) + GRID_HEIGHT * SCALE_Y(grid_size))
                 {
+                    printf("Mouse out of bounds\n");
+                    //if button is released 
+                    selecting = 0;
                     break;
                 }
 
@@ -588,16 +601,22 @@ int main(int argc, char **argv) {
                     printf("Mouse down\n");
                     if (placing == 3 && event.button.button == SDL_BUTTON_LEFT) {
                         selecting = 1;
-                        selection_start_x = (mouse_x - GRID_MARGIN_X) / grid_size;
-                        selection_start_y = (mouse_y - GRID_MARGIN_Y) / grid_size;
+                        // selection_start_x = (mouse_x - GRID_MARGIN_X) / grid_size;
+                        // selection_start_y = (mouse_y - GRID_MARGIN_Y) / grid_size;
+                        // selection_end_x = selection_start_x;
+                        // selection_end_y = selection_start_y;
+                        selection_start_x = (int)((mouse_x - SCALE_X(GRID_MARGIN_X)) / (float)grid_size);
+                        selection_start_y = (int)((mouse_y - SCALE_Y(GRID_MARGIN_Y)) / (float)grid_size);
                         selection_end_x = selection_start_x;
                         selection_end_y = selection_start_y;
                     }
                 }
 
                 if (event.type == SDL_MOUSEMOTION && selecting && event.button.button == SDL_BUTTON_LEFT) {
-                    selection_end_x = (mouse_x - GRID_MARGIN_X) / grid_size;
-                    selection_end_y = (mouse_y - GRID_MARGIN_Y) / grid_size;
+                    
+                    selection_end_x = (int)((mouse_x - SCALE_X(GRID_MARGIN_X)) / (float)grid_size);
+                    selection_end_y = (int)((mouse_y - SCALE_Y(GRID_MARGIN_Y)) / (float)grid_size);
+                    printf("Selection end: %d %d\n", selection_end_x, selection_end_y);
                 }
 
 
@@ -734,7 +753,7 @@ int main(int argc, char **argv) {
         renderString(renderer, font, GRID_MARGIN_X, GRID_MARGIN_Y/2, "Conway's Game of Life");
         int font_width; 
         TTF_SizeText(font, "Schematics", &font_width, NULL);
-        renderString(renderer, font, text_offset + 250 - font_width / 2, GRID_MARGIN_Y + 15, "Schematics");
+        renderString(renderer, font, SCALE_X(text_offset + 250 - font_width / 2), SCALE_Y(GRID_MARGIN_Y + 15), "Schematics");
         
         char GenerationString[50];
         sprintf(GenerationString, "Generation : %d", generation);
@@ -784,18 +803,18 @@ int main(int argc, char **argv) {
         }
         if (selecting) {
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 128); 
-            SDL_Rect selectionRect = {
-                .x = GRID_MARGIN_X + selection_start_x * grid_size,
-                .y = GRID_MARGIN_Y + selection_start_y * grid_size,
-                .w = (selection_end_x - selection_start_x + 1) * grid_size,
-                .h = (selection_end_y - selection_start_y + 1) * grid_size
-            };
             // SDL_Rect selectionRect = {
-            //     .x = SCALE_X(GRID_MARGIN_X + selection_start_x * grid_size),
-            //     .y = SCALE_Y(GRID_MARGIN_Y + selection_start_y * grid_size),
+            //     .x = GRID_MARGIN_X + selection_start_x * grid_size,
+            //     .y = GRID_MARGIN_Y + selection_start_y * grid_size,
             //     .w = (selection_end_x - selection_start_x + 1) * grid_size,
             //     .h = (selection_end_y - selection_start_y + 1) * grid_size
             // };
+            SDL_Rect selectionRect = {
+                .x = SCALE_X(GRID_MARGIN_X) + selection_start_x * grid_size,
+                .y = SCALE_Y(GRID_MARGIN_Y) + selection_start_y * grid_size,
+                .w = (selection_end_x - selection_start_x + 1) * grid_size,
+                .h = (selection_end_y - selection_start_y + 1) * grid_size
+            };
             SDL_RenderDrawRect(renderer, &selectionRect);
         }
             

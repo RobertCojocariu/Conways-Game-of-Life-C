@@ -4,6 +4,22 @@
 #include "../include/schems.h"
 
 
+void CalculateNearest16_9Resolution(int screenWidth, int screenHeight, int* targetWidth, int* targetHeight) {
+    // Calculate the maximum width and height for 16:9
+    int max16_9Width = screenWidth;
+    int max16_9Height = (max16_9Width * 9) / 16;
+
+    // If the height exceeds the screen height, adjust the width
+    if (max16_9Height > screenHeight) {
+        max16_9Height = screenHeight;
+        max16_9Width = (max16_9Height * 16) / 9;
+    }
+
+    // Set the calculated width and height
+    *targetWidth = max16_9Width;
+    *targetHeight = max16_9Height;
+}
+
 void renderString(SDL_Renderer * renderer, TTF_Font *font, int x, int y, const char * text) {
     SDL_Color color = {255, 255, 255, 255};
     SDL_Surface * surface = TTF_RenderText_Solid(font, text, color);

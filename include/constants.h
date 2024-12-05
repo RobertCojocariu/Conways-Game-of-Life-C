@@ -39,6 +39,9 @@
 #define SCALE_X(value) ((int)((value) * scaleX))
 #define SCALE_Y(value) ((int)((value) * scaleY))
 
+#define TARGET_ASPECT_RATIO_X 16
+#define TARGET_ASPECT_RATIO_Y 9
+
 #define  BASE_FONT_SIZE 24 
 #define  BASE_FONT_SIZE_SMALL 18
 #endif // ! CONSTANTS

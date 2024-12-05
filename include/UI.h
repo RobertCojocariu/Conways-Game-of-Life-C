@@ -34,6 +34,7 @@ void drawTextField(TextField *txt, SDL_Renderer * renderer, TTF_Font * font, int
 void drawOverlayedLabel(SDL_Renderer * renderer, OverlayedLabel * label, TTF_Font * font, float scaleX, float scaleY);
 void handleTextField(TextField *textField, SDL_Event *event, Uint32 repeatDelay, Uint32 lastKeyPressTime);
 void drawTutorial(SDL_Renderer * renderer, OverlayedLabel *lbl, TTF_Font * font, float scaleX, float scaleY);
+void CalculateNearest16_9Resolution(int screenWidth, int screenHeight, int* targetWidth, int* targetHeight);
 
 #endif // !UI_H
 

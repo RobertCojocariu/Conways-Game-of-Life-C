@@ -123,8 +123,8 @@ char **get_txt_files(const char *directory_path, int *count) { // returns an arr
 
 void placeSchematic(SDL_Renderer * renderer, Schematic * schematic,  int mouse_x, int mouse_y, int placing, float scaleX, float scaleY)  {
     if (placing == 2) {
-        int preview_x =(mouse_x - GRID_MARGIN_X) / GRID_SIZE;
-        int preview_y =(mouse_y - GRID_MARGIN_Y) / GRID_SIZE;
+        int preview_x =(mouse_x - SCALE_X(GRID_MARGIN_X)) / SCALE_X(GRID_SIZE);
+        int preview_y = (mouse_y - SCALE_Y(GRID_MARGIN_Y)) / SCALE_Y(GRID_SIZE);
         SDL_SetRenderDrawColor(renderer, 128, 128, 128, 128); 
        
         // shadow of schem under mouse  
@@ -133,8 +133,10 @@ void placeSchematic(SDL_Renderer * renderer, Schematic * schematic,  int mouse_x
             for(int j = 0; j < schematic->sH; j++) {
                 if(schematic->cells[j][i] == 1) {
                     SDL_Rect cell = {
-                        GRID_MARGIN_X + preview_x * GRID_SIZE + i * SCALE_X(GRID_SIZE), 
-                        GRID_MARGIN_Y + preview_y * GRID_SIZE + j * SCALE_Y(GRID_SIZE),
+                        //GRID_MARGIN_X + preview_x * GRID_SIZE + i * SCALE_X(GRID_SIZE), 
+                        SCALE_X(GRID_MARGIN_X) + preview_x * SCALE_X(GRID_SIZE) + i * SCALE_X(GRID_SIZE),
+                        // GRID_MARGIN_Y + preview_y * GRID_SIZE + j * SCALE_Y(GRID_SIZE),
+                        SCALE_Y(GRID_MARGIN_Y) + preview_y * SCALE_Y(GRID_SIZE) + j * SCALE_Y(GRID_SIZE),
                         SCALE_X(GRID_SIZE),
                         SCALE_Y(GRID_SIZE)
                     };

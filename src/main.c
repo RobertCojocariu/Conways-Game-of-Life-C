@@ -1,4 +1,5 @@
 
+#include <SDL2/SDL_render.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -539,16 +540,14 @@ int main(int argc, char **argv) {
                     int grid_margin_x = SCALE_X(GRID_MARGIN_X);
                     int grid_margin_y = SCALE_Y(GRID_MARGIN_Y); 
                     int scaledGridSize = SCALE_X(grid_size);
-                    int grid_width = GRID_WIDTH; 
-                    int grid_height = GRID_HEIGHT;
 
                     if (event.button.button == SDL_BUTTON_RIGHT) {
                         placing = 1;
                         break;
                     }
 
-                    if(mouse_x < grid_margin_x - scaledGridSize || mouse_x >= grid_margin_x + grid_width * scaledGridSize ||
-                        mouse_y < grid_margin_y - scaledGridSize || mouse_y >= grid_margin_y + grid_height * scaledGridSize) {
+                    if(mouse_x < grid_margin_x - scaledGridSize || mouse_x >= grid_margin_x + GRID_WIDTH * scaledGridSize ||
+                        mouse_y < grid_margin_y - scaledGridSize || mouse_y >= grid_margin_y + GRID_HEIGHT * scaledGridSize) {
                         break;
                     }
 
@@ -556,13 +555,13 @@ int main(int argc, char **argv) {
                     int preview_y = (mouse_y - grid_margin_y) / scaledGridSize;
                     
                     // if (preview_x < 0 || preview_x >= GRID_WIDTH || preview_y < 0 || preview_y >= GRID_HEIGHT) {
-                    if(preview_x < 0 || preview_x >= grid_width || preview_y < 0 || preview_y >= grid_height) {
+                    if(preview_x < 0 || preview_x >= GRID_WIDTH || preview_y < 0 || preview_y >= GRID_HEIGHT) {
                         break;
                     }
                     for(int i = 0; i < schematics[indexOfSchemPressed].sW; i++) {
                         for(int j = 0; j < schematics[indexOfSchemPressed].sH; j++) {
                             // if(schematics[indexOfSchemPressed].cells[j][i] == 1 && preview_x + i < GRID_WIDTH && preview_y + j < GRID_HEIGHT) {
-                            if(schematics[indexOfSchemPressed].cells[j][i] == 1 && preview_x + i < grid_width && preview_y + j < grid_height) {
+                            if(schematics[indexOfSchemPressed].cells[j][i] == 1 && preview_x + i < GRID_WIDTH && preview_y + j < GRID_HEIGHT) {
                                 cells[preview_x + i][preview_y + j] = 1;
                             }
                         }
@@ -591,8 +590,8 @@ int main(int argc, char **argv) {
                 if(mouse_x < SCALE_X(GRID_MARGIN_X) || mouse_x >= SCALE_X(GRID_MARGIN_X) + GRID_WIDTH * SCALE_X(grid_size) ||
                     mouse_y < SCALE_Y(GRID_MARGIN_Y) || mouse_y >= SCALE_Y(GRID_MARGIN_Y) + GRID_HEIGHT * SCALE_Y(grid_size))
                 {
-                    printf("Mouse out of bounds\n");
                     //if button is released 
+                    if(selecting == 1)placing = 1; //exit selection mode
                     selecting = 0;
                     break;
                 }

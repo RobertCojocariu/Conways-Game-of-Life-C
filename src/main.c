@@ -80,10 +80,10 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    // int screen_width = display_mode.w; 
-    // int screen_height = display_mode.h;
-    int screen_width = 1280; 
-    int screen_height = 720;
+    int screen_width = display_mode.w; 
+    int screen_height = display_mode.h;
+    // int screen_width = 1280; 
+    // int screen_height = 720;
 
 
     int target_width, target_height;
